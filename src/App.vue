@@ -16,5 +16,5 @@ export default {
 }
 </script>
 
-<style>
+<style scoped lang="stylus">
 </style>

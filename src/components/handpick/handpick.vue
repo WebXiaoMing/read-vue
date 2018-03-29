@@ -7,28 +7,33 @@
       </div>
       <div class="title">精选</div>
     </div>
-    <div class="container">
-      <div class="slider-wrapper">
-        <div class="slider-content">
-          <slider>
-          </slider>
+    <scroll class="container" :data="list">
+      <div>
+        <div class="slider-wrapper">
+            <div class="slider-content">
+              <slider>
+              </slider>
+            </div>
+          </div>
+        <div class="book-list-wrapper recommend">
+          <recommend-list></recommend-list>
+          <recommend-list></recommend-list>
         </div>
+        <div class="book-list-wrapper hot"></div>
+        <div class="book-list-wrapper finish"></div>
       </div>
-      <div class="book-list recommend">
-        <recommend-list></recommend-list>
-      </div>
-      <div class="book-list hot"></div>
-      <div class="book-list finish"></div>  
-    </div>
+    </scroll>
   </div>
 </template>
 <script type="text/ecmascript-6">
   import Slider from 'base/slider/slider'
+  import Scroll from 'base/scroll/scroll'
   import RecommendList from 'base/recommend-list/recommend-list'
 
   export default {
     data () {
       return {
+        list: []
       }
     },
     created () {
@@ -37,24 +42,26 @@
     },
     components: {
       Slider,
-      RecommendList
+      RecommendList,
+      Scroll
     }
   }
 </script>
 <style lang="stylus" scoped>
   @import "~common/stylus/variable.styl"
   .handpick-wrapper
-    position relative
+    position fixed
     top 0
     left 0
     right 0
-    background $background-color-d
     bottom 3.125rem
-    overflow hidden
+    height 100%
+    background $background-color-d
     .top-title
-      position relative
+      position fixed
       top 0
       left 0
+      z-index 998
       width 100%
       height: 3.125rem
       background $theme-color
@@ -75,21 +82,30 @@
         top 0
         text-align center
         font-size $font-size-large
-    .slider-wrapper
+    .container
       position relative
+      left 0
+      bottom 3.125rem
+      top 3.125rem
+      right 0
       width 100%
-      height 0
-      padding-top 40%
+      height 100%
       overflow hidden
-      .slider-content
-        position absolute
-        top 0
+      .slider-wrapper
+        position relative
         left 0
         width 100%
-        height 100%
-    .book-list
-      margin-top 0.625rem
-      width 100%
-      padding 0 1rem
-      background $background-color    
+        height 0
+        padding-top 40%
+        overflow hidden
+        .slider-content
+          position absolute
+          top 0
+          left 0
+          width 100%
+          height 100%
+      .book-list-wrapper
+        margin-top 0.625rem
+        padding 0 1rem
+        background $background-color
 </style>
