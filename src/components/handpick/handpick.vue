@@ -7,16 +7,25 @@
       </div>
       <div class="title">精选</div>
     </div>
-    <div class="slider-wrapper">
-      <div class="slider-content">
-        <slider>
-        </slider>
+    <div class="container">
+      <div class="slider-wrapper">
+        <div class="slider-content">
+          <slider>
+          </slider>
+        </div>
       </div>
+      <div class="book-list recommend">
+        <recommend-list></recommend-list>
+      </div>
+      <div class="book-list hot"></div>
+      <div class="book-list finish"></div>  
     </div>
   </div>
 </template>
 <script type="text/ecmascript-6">
   import Slider from 'base/slider/slider'
+  import RecommendList from 'base/recommend-list/recommend-list'
+
   export default {
     data () {
       return {
@@ -27,7 +36,8 @@
     methods: {
     },
     components: {
-      Slider
+      Slider,
+      RecommendList
     }
   }
 </script>
@@ -38,6 +48,7 @@
     top 0
     left 0
     right 0
+    background $background-color-d
     bottom 3.125rem
     overflow hidden
     .top-title
@@ -51,7 +62,7 @@
       line-height 3.125rem
       .switch-wrapper
         line-height 3.125rem
-        padding-left 1.125rem
+        padding-left 1rem
         font-size 1rem
         .arrow-btn
           position absolute
@@ -76,4 +87,9 @@
         left 0
         width 100%
         height 100%
+    .book-list
+      margin-top 0.625rem
+      width 100%
+      padding 0 1rem
+      background $background-color    
 </style>

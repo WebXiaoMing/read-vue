@@ -184,5 +184,5 @@
         background #fff
         opacity 0.5
         &.active
-          width 20px
+          width 1.25rem
 </style>
