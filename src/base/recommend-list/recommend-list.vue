@@ -1,5 +1,5 @@
 <template>
-  <div class="recommend">
+  <div class="recommend" v-if="recommendList.length">
     <div class="recommend-title-wrapper">
       <div class="recommend-title">
         <span class="line-icon"></span>
@@ -13,6 +13,22 @@
     <div class="recommend-book-list">
       <div class="recommend-top-book">
         <div class="top-book-left">
+<<<<<<< HEAD
+          <img class="book-image" :src="recommendList[0].image" />
+        </div>
+        <div class="top-book-right">
+          <h1 class="top-book-name">{{recommendList[0].title}}</h1>
+          <p class="top-book-short">{{recommendList[0].shortInfo}}</p>
+          <div class="top-book-info">
+            <div class="book-author">
+              <i class="icon-author"></i>
+              <span class="author-name">{{recommendList[0].author}}</span>
+            </div>
+            <div class="book-info">
+              <span class="book-genre">{{recommendList[0].classifi}}</span>
+              <span class="book-genre">{{recommendList[0].minClass}}</span>
+              <span class="book-pop">{{recommendList[0].star}}人气</span>
+=======
           <img class="book-image" src="./图层 6.png" />
         </div>
         <div class="top-book-right">
@@ -26,12 +42,28 @@
             <div class="book-info">
               <span class="book-genre">玄幻</span>
               <span class="book-pop">1000人气</span>
+>>>>>>> 33f8be6e677a77d98181c71c89997c924ee026ae
             </div>
           </div>
         </div>
       </div>
       <div class="book-list">
         <div class="book-item">
+<<<<<<< HEAD
+          <img class="book-item-image" :src="recommendList[1].image" />
+          <p class="book-item-name">{{recommendList[1].title}}</p>
+          <p class="book-item-author">{{recommendList[1].author}}</p>
+        </div>
+        <div class="book-item">
+          <img class="book-item-image" :src="recommendList[2].image" />
+          <p class="book-item-name">{{recommendList[2].title}}</p>
+          <p class="book-item-author">{{recommendList[2].author}}</p>
+        </div>
+        <div class="book-item">
+          <img class="book-item-image" :src="recommendList[3].image" />
+          <p class="book-item-name">{{recommendList[3].title}}</p>
+          <p class="book-item-author">{{recommendList[3].author}}</p>
+=======
           <img class="book-item-image" src="./图层 6.png" />
           <p class="book-item-name">凡人修仙之仙界篇</p>
           <p class="book-item-author">忘语</p>
@@ -45,13 +77,44 @@
           <img class="book-item-image" src="./图层 6.png" />
           <p class="book-item-name">凡人修仙之仙界篇</p>
           <p class="book-item-author">忘语大家好</p>
+>>>>>>> 33f8be6e677a77d98181c71c89997c924ee026ae
         </div>
       </div>
     </div>
   </div>
 </template>
 <script type="text/ecmascript-6">
+<<<<<<< HEAD
+  import {getRankList} from 'api/handpick'
+  import {book} from 'common/js/books'
 
+  export default {
+    props: {
+      rankList: {
+        type: Array,
+        default: null,
+        required: true
+      }
+    },
+    data () {
+      return {
+        recommendList: []
+      }
+    },
+    methods: {
+
+    },
+    watch: {
+      rankList (newVal) {
+        getRankList(newVal[0]._id).then(res => {
+          this.recommendList = res.data.ranking.books.map(item => book(item))
+        })
+      }
+    }
+  }
+=======
+
+>>>>>>> 33f8be6e677a77d98181c71c89997c924ee026ae
 </script>
 <style scoped lang="stylus">
   @import '~common/stylus/variable.styl'
