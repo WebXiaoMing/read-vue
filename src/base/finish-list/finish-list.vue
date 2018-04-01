@@ -1,5 +1,5 @@
 <template>
-  <div class="hot-list" v-if="hotList.length">
+  <div class="hot-list" v-if="finishList.length">
     <div class="hot-title-wrapper">
       <div class="hot-title">
         <span class="line-icon"></span>
@@ -10,7 +10,7 @@
         <i class="icon-arrow"></i>
       </div>
     </div>
-    <div class="hot-book-list" v-for="item in hotList">
+    <div class="hot-book-list" v-for="item in finishList">
       <div class="hot-top-book">
         <div class="top-book-left">
           <img class="book-image" :src="item.image" />
@@ -49,24 +49,24 @@
     },
     data () {
       return {
-        hotList: [],
-        title: '热门追更'
+        finishList: [],
+        title: '完结经典'
       }
     },
     methods: {
       selectMore () {
-        this.$emit('hotRank')
-        this.setCurrentRank(this.list[4])
+        this.$emit('finishRank')
+        this.setCurrentRank(this.list[5])
       },
       ...mapMutations({
-        setCurrentRank: 'SET_CURRENT_RANK'
+        'setCurrentRank': 'SET_CURRENT_RANK'
       })
     },
     watch: {
       list (newVal) {
-        let id = newVal[4]._id
-        getRankList(id).then(res => {
-          this.hotList = res.data.ranking.books.map(item => book(item)).slice(0, 3)
+        this.ranks = newVal[5]
+        getRankList(this.ranks._id).then(res => {
+          this.finishList = res.data.ranking.books.map(item => book(item)).slice(0, 3)
         })
       }
     }
@@ -154,4 +154,3 @@
               padding 0 0.125rem
               border 1px solid $font-color
 </style>
-

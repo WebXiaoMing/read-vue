@@ -5,15 +5,14 @@
         <span class="line-icon"></span>
         <span class="recommend-name">主编力荐</span>
       </div>
-      <div class="recommend-more">
+      <div class="recommend-more" @click="selectMore">
         <span class="more-text">查看更多</span>
         <i class="icon-arrow"></i>
       </div>
     </div>
     <div class="recommend-book-list">
-      <div class="recommend-top-book">
+      <div class="recommend-top-book" @click="selectBook(recommendList[0])">
         <div class="top-book-left">
-<<<<<<< HEAD
           <img class="book-image" :src="recommendList[0].image" />
         </div>
         <div class="top-book-right">
@@ -26,67 +25,41 @@
             </div>
             <div class="book-info">
               <span class="book-genre">{{recommendList[0].classifi}}</span>
-              <span class="book-genre">{{recommendList[0].minClass}}</span>
+              <span class="book-genre">{{recommendList[0].minClass.substr(0, 2)}}</span>
               <span class="book-pop">{{recommendList[0].star}}人气</span>
-=======
-          <img class="book-image" src="./图层 6.png" />
-        </div>
-        <div class="top-book-right">
-          <h1 class="top-book-name">神医凤后：傲娇暴君，强势回归啊哈哈哈</h1>
-          <p class="top-book-short">大墟的祖训说，天黑，别出门。大墟残老村的老弱病残们从江边捡到了一个婴儿，取名秦牧，含辛茹苦将他养大。这一天夜......</p>
-          <div class="top-book-info">
-            <div class="book-author">
-              <i class="icon-author"></i>
-              <span class="author-name">苏小暖</span>
-            </div>
-            <div class="book-info">
-              <span class="book-genre">玄幻</span>
-              <span class="book-pop">1000人气</span>
->>>>>>> 33f8be6e677a77d98181c71c89997c924ee026ae
             </div>
           </div>
         </div>
       </div>
       <div class="book-list">
-        <div class="book-item">
-<<<<<<< HEAD
+        <div class="book-item" @click="selectBook(recommendList[1])">
           <img class="book-item-image" :src="recommendList[1].image" />
           <p class="book-item-name">{{recommendList[1].title}}</p>
           <p class="book-item-author">{{recommendList[1].author}}</p>
         </div>
-        <div class="book-item">
+        <div class="book-item" @click="selectBook(recommendList[2])">
           <img class="book-item-image" :src="recommendList[2].image" />
           <p class="book-item-name">{{recommendList[2].title}}</p>
           <p class="book-item-author">{{recommendList[2].author}}</p>
         </div>
-        <div class="book-item">
+        <div class="book-item" @click="selectBook(recommendList[3])">
           <img class="book-item-image" :src="recommendList[3].image" />
           <p class="book-item-name">{{recommendList[3].title}}</p>
           <p class="book-item-author">{{recommendList[3].author}}</p>
-=======
-          <img class="book-item-image" src="./图层 6.png" />
-          <p class="book-item-name">凡人修仙之仙界篇</p>
-          <p class="book-item-author">忘语</p>
-        </div>
-        <div class="book-item">
-          <img class="book-item-image" src="./图层 6.png" />
-          <p class="book-item-name">凡人修仙之仙界篇</p>
-          <p class="book-item-author">大叫好啊</p>
-        </div>
-        <div class="book-item">
-          <img class="book-item-image" src="./图层 6.png" />
-          <p class="book-item-name">凡人修仙之仙界篇</p>
-          <p class="book-item-author">忘语大家好</p>
->>>>>>> 33f8be6e677a77d98181c71c89997c924ee026ae
         </div>
       </div>
     </div>
   </div>
+  <div class="loading-wrapper" v-else>
+    <loading></loading>
+  </div>
 </template>
 <script type="text/ecmascript-6">
-<<<<<<< HEAD
   import {getRankList} from 'api/handpick'
   import {book} from 'common/js/books'
+  import Loading from 'base/loading/loading'
+
+  import {mapMutations} from 'vuex'
 
   export default {
     props: {
@@ -98,23 +71,34 @@
     },
     data () {
       return {
-        recommendList: []
+        recommendList: [],
+        ranks: null
       }
     },
     methods: {
-
+      selectMore () {
+        this.$emit('recommendRank')
+        this.setCurrentRank(this.rankList[0])
+      },
+      selectBook (item) {
+        this.$emit('selectBook', item)
+      },
+      ...mapMutations({
+        setCurrentRank: 'SET_CURRENT_RANK'
+      })
     },
     watch: {
       rankList (newVal) {
+        this.ranks = newVal[0]
         getRankList(newVal[0]._id).then(res => {
           this.recommendList = res.data.ranking.books.map(item => book(item))
         })
       }
+    },
+    components: {
+      Loading
     }
   }
-=======
-
->>>>>>> 33f8be6e677a77d98181c71c89997c924ee026ae
 </script>
 <style scoped lang="stylus">
   @import '~common/stylus/variable.styl'
@@ -199,7 +183,7 @@
       display flex
       justify-content space-between
       padding 0.75rem 0
-      height 11.375rem
+      height 11.875rem
       width 100%
       .book-item
         width 5.625rem
@@ -213,10 +197,16 @@
         .book-item-name
           font-size $font-size-medium
           color $font-color-d
-          padding 0.625rem 0
+          margin 0.625rem 0
           no-wrap(2)
         .book-item-author
           height 1rem
           font-size $font-size-small
           color $font-color
+  .loading-wrapper
+    position fixed
+    width 100%
+    top 200%
+    z-index 998
+    margin-left -4%
 </style>

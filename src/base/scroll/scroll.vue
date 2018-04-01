@@ -30,6 +30,10 @@
         type: Boolean,
         default: false
       },
+      pullDownRefresh: {
+        type: Object,
+        default: null
+      },
       beforeScroll: {
         type: Boolean,
         default: false
@@ -41,11 +45,18 @@
       direction: {
         type: String,
         default: DIRECTION_V
+      },
+      bounce: {
+        type: Boolean,
+        default: true
+      },
+      pulldown: {
+        type: Boolean,
+        default: false
       }
     },
     mounted () {
       setTimeout(() => {
-
         this._initScroll()
         this.scroll.refresh()
       }, 200)
@@ -59,15 +70,17 @@
         this.scroll = new Bscroll(this.$refs.wrapper, {
           probeType: this.probeType,
           click: this.click,
-          eventPassthrough: this.direction === DIRECTION_V ? DIRECTION_H : DIRECTION_V
+          bounce: this.bounce,
+          eventPassthrough: this.direction === DIRECTION_V ? DIRECTION_H : DIRECTION_V,
+          pullDownRefresh: this.pullDownRefresh
         })
-        if (this.pullup) {
-          this.scroll.on('scrollEnd', () => {
-            if (this.scroll.y <= (this.scroll.maxScrollY + 50)) {
-              this.$emit('scrollToEnd')
-            }
+
+         if (this.pulldown) {
+          this.scroll.on('pullingDown', () => {
+            this.$emit('onPullingDown')
           })
         }
+
         if (this.beforeScroll) {
           this.scroll.on('beforeScrollStart', () => {
             this.$emit('beforeScroll')
@@ -82,6 +95,9 @@
       },
       refresh () {
         this.scroll && this.scroll.refresh()
+      },
+      finishPullDown () {
+        this.scroll && this.scroll.finishPullDown()
       },
       scrollTo () {
         this.scroll && this.scroll.scrollTo.apply(this.scroll, arguments)

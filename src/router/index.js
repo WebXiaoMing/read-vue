@@ -7,6 +7,8 @@ const Classify = () => import('components/classify/classify')
 const Handpick = () => import('components/handpick/handpick')
 const Search = () => import('components/search/search')
 const Mine = () => import('components/mine/mine')
+const RankList = () => import('components/rank-list/rank-list')
+const BookDetail = () => import('components/book-detail/book-detail')
 
 
 export default new Router({
@@ -20,8 +22,18 @@ export default new Router({
       component: BookShelf
     },
     {
-      path: '/handpick',
-      component: Handpick
+      path: '/handpick/',
+      component: Handpick,
+      children: [
+        {
+          path: ':rank',
+          component: RankList
+        },
+        {
+          path: 'book/:id',
+          component: BookDetail
+        }
+      ]
     },
     {
       path: '/classify',
