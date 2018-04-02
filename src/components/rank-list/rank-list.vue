@@ -67,7 +67,7 @@
       },
       selectBook (item) {
         this.$router.push({
-          path: `/handpick/book/${item.id}`
+          path: `/book/${item.id}`
         })
       },
       changeRank (index) {

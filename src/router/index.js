@@ -28,12 +28,6 @@ export default new Router({
         {
           path: ':rank/',
           component: RankList,
-          children: [
-            {
-              path: ':id',
-              component: BookDetail
-            }
-          ]
         },
         {
           path: 'book/:id',
@@ -52,6 +46,10 @@ export default new Router({
     {
       path: '/mine',
       component: Mine
+    },
+    {
+      path: '/book/:id',
+      component: BookDetail
     }
   ]
 })
