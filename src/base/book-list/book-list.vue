@@ -6,7 +6,7 @@
                                 ref="scroll"
   >
     <ul class="book-list-wrapper" v-show="bookList.length">
-      <li class="book-item" v-for="book in bookList">
+      <li class="book-item" v-for="book in bookList" @click="selectBook(book)">
         <div class="item-left">
           <img v-lazy="book.image" />
         </div>
@@ -57,6 +57,9 @@
       },
       finishPullDown () {
         this.$refs.scroll.finishPullDown()
+      },
+      selectBook (item) {
+        this.$emit('selectBook', item)
       }
     },
     components: {

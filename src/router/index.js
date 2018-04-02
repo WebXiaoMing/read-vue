@@ -26,8 +26,14 @@ export default new Router({
       component: Handpick,
       children: [
         {
-          path: ':rank',
-          component: RankList
+          path: ':rank/',
+          component: RankList,
+          children: [
+            {
+              path: ':id',
+              component: BookDetail
+            }
+          ]
         },
         {
           path: 'book/:id',

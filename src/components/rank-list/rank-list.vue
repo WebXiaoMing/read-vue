@@ -24,6 +24,7 @@
                       @onPullingDown="onPullingDown(_getRankList)"
                       :pullDownRefresh="pullDownRefresh"
                       ref="scroll"
+                      @selectBook="selectBook"
           ></book-list>
         </div>
       </div>
@@ -64,6 +65,11 @@
       back () {
         this.$router.back()
       },
+      selectBook (item) {
+        this.$router.push({
+          path: `/handpick/book/${item.id}`
+        })
+      },
       changeRank (index) {
         this.currentType = index
         this.rankList = []
@@ -93,7 +99,7 @@
   @import '~common/stylus/mixin.styl'
   .rank
     position fixed
-    z-index 1000
+    z-index 996
     top 0
     left 0
     right 0
@@ -151,6 +157,7 @@
     transition all 0.3s
   .fade-enter, .fade-leave-to
     transform translate3d(100%, 0, 0)
+    opacity 0
 </style>
 
 

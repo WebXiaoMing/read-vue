@@ -1,6 +1,7 @@
 
 const state = {
-  currentRank: {}
+  currentRank: {},
+  currentBook: {}
 }
 
 export default state

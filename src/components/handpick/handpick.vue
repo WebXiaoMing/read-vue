@@ -36,10 +36,16 @@
                           />
         </div>
         <div class="book-list-wrapper hot">
-          <hot-list @hotRank="getRecommendRank('hot')" :list="rankList"></hot-list>
+          <hot-list @hotRank="getRecommendRank('hot')"
+                    @selectBook="selectBook"
+                    :list="rankList"
+                    />
         </div>
         <div class="book-list-wrapper finish">
-          <finish-list @finishRank="getRecommendRank('finish')" :list="rankList"></finish-list>
+          <finish-list @finishRank="getRecommendRank('finish')"
+                       :list="rankList"
+                       @selectBook="selectBook"
+                       />
         </div>
       </div>
     </scroll>
@@ -57,6 +63,7 @@
 
   import {getRankType} from 'api/handpick'
   import {setPullDownRefresh} from 'common/js/mixin'
+  import {mapMutations, mapActions} from 'vuex'
 
   export default {
     mixins: [setPullDownRefresh],
@@ -96,10 +103,10 @@
         })
       },
       selectBook (item) {
-        console.log(item)
         this.$router.push({
           path: `/handpick/book/${item.id}`
         })
+        this.setCurrentBook(item)
       },
       showSwitchBox () {
         this.$refs.switch.show()
@@ -116,7 +123,10 @@
         this.open = false
         this.currentIndex = index
         this.currentIndex === 0 ? this.gender = 'male' : this.gender = 'female'
-      }
+      },
+      ...mapMutations({
+        'setCurrentBook': 'SET_CURRENT_BOOK'
+      })
     },
     watch: {
         gender (newVal, oldVal) {

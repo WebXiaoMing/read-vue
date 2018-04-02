@@ -11,7 +11,7 @@
       </div>
     </div>
     <div class="hot-book-list" v-for="item in finishList">
-      <div class="hot-top-book">
+      <div class="hot-top-book" @click="selectBook(item)">
         <div class="top-book-left">
           <img class="book-image" :src="item.image" />
         </div>
@@ -57,6 +57,9 @@
       selectMore () {
         this.$emit('finishRank')
         this.setCurrentRank(this.list[5])
+      },
+      selectBook (item) {
+        this.$emit('selectBook', item)
       },
       ...mapMutations({
         'setCurrentRank': 'SET_CURRENT_RANK'

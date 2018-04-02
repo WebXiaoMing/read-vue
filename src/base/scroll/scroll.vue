@@ -75,9 +75,15 @@
           pullDownRefresh: this.pullDownRefresh
         })
 
-         if (this.pulldown) {
+        if (this.pulldown) {
           this.scroll.on('pullingDown', () => {
             this.$emit('onPullingDown')
+          })
+        }
+
+        if (this.listenScroll) {
+          this.scroll.on('scroll', (pos) => {
+            this.$emit('scroll', pos)
           })
         }
 

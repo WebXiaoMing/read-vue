@@ -1,7 +1,7 @@
 <template>
   <div class="book-class-content">
     <h1 class="class-title"><span class="title-solid"></span>{{title}}</h1>
-    <div class="class-book-list">
+    <div class="class-book-list" ref="slider">
       <div class="list-wrapper" ref="sliderGroup">
         <div class="item">
           <img class="image" src="./image.png">
@@ -16,7 +16,7 @@
         <div class="item">
           <img class="image" src="./image.png">
           <p class="book-name">完美人生</p>
-          <p class="reader">12万人读过</p>
+          <p class="reader">128.9万人读过</p>
         </div>
         <div class="item">
           <img class="image" src="./image.png">
@@ -29,37 +29,64 @@
   </div>
 </template>
 <script type="text/ecmascript-6">
+  import Bscroll from 'better-scroll'
   export default {
     props: {
       title: {
         type: String,
         default: ''
-      }
+      },
+      data: {
+        type: Array,
+        default: []
+      },
+      refreshDelay: {
+        type: Number,
+        default: 20
+      },
     },
-    mounted () {
+    created () {
       setTimeout(() => {
         this._setScrollWidth()
-      }, 2000)
+        this._initScroll()
+      }, this.refreshDelay)
     },
     methods: {
       _setScrollWidth () {
         this.children = this.$refs.sliderGroup.children
         let width = 0
-        let item = document.querySelectorAll('.class-book-list .list-wrapper .item')[0]
-        console.log(item.style)
-        let itemWidth = parseInt(item.clientWidth) + parseInt(item.style.marginRight)
+        let itemWidth = this.children[0].clientWidth
 
         for (let i = 0; i < this.children.length; i ++) {
           width += itemWidth
         }
-        console.log(width)
+
         this.$refs.sliderGroup.style.width = width + 'px'
+      },
+      _initScroll () {
+        this.scroll = new Bscroll(this.$refs.slider, {
+          scrollY: false,
+          scrollX: true,
+          click: false,
+          bounce: false
+        })
+      },
+      refresh () {
+        this.scroll && this.scroll.refresh()
+      }
+    },
+    watch: {
+      data () {
+        setTimeout (() => {
+          this.refresh()
+        }, this.refreshDelay)
       }
     }
   }
 </script>
 <style lang="stylus" scoped>
   @import '~common/stylus/variable.styl'
+  @import '~common/stylus/mixin.styl'
 
   .book-class-content
     width 100%
@@ -84,12 +111,25 @@
       overflow hidden
       .list-wrapper
         padding-bottom 0.75rem
+        height 100%
+        display flex
+        flex-flow row nowrap
         .item
-          float left
-          width 5.625rem
           height 100%
-          margin-right 2rem
+          box-sizing border-box
+          padding-right 1.6rem
           .image
-            width 100% 
+            width 5.625rem
+          .book-name
+            font-size $font-size-medium
+            color $font-color-dd
+            line-height 2rem
+            width 5.625rem
+            no-wrap(1)
+          .reader
+            font-size $font-size-small
+            width 5.625rem
+            line-height 1rem
+            no-wrap(1)
 </style>
 
