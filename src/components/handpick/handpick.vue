@@ -103,10 +103,10 @@
         })
       },
       selectBook (item) {
-        this.$router.push({
-          path: `/book/${item.id}`
-        })
         this.setCurrentBook(item)
+        this.$router.push({
+          path: `/handpick/book/${item.id}`
+        })
       },
       showSwitchBox () {
         this.$refs.switch.show()

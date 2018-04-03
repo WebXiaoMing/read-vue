@@ -59,7 +59,7 @@
       setTimeout(() => {
         this._initScroll()
         this.scroll.refresh()
-      }, 200)
+      }, 20)
     },
     methods: {
       _initScroll () {

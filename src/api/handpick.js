@@ -9,3 +9,8 @@ export function getRankType () {
 export function getRankList (id) {
   return Vue.http.get('/ranking/' + id)
 }
+
+// 获取书本信息
+export function getBookInfo (id) {
+  return Vue.http.get('/book/'+ id)
+}

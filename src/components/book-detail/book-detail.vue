@@ -8,7 +8,7 @@
     </div>
     <div class="bg-layer" ref="bgLayer"></div>
     <div class="book-detail-content" ref="detailContent">
-      <scroll class="content" :data="sameAuthor"
+      <scroll class="content" :data="[]"
                               :probe-type="probeType"
                               :listen-scroll="listenScroll"
                               @scroll="scroll"
@@ -16,35 +16,34 @@
         <div>
           <div class="book-info-wrapper" ref="bookInfo">
             <div class="book-image">
-              <img src="./image.png">
+              <img :src="bookInfo.image">
             </div>
             <div class="book-info">
-              <h1 class="book-name">完美人生</h1>
-              <p class="book-author">刀一耕</p>
+              <h1 class="book-name">{{bookInfo.title}}</h1>
+              <p class="book-author">{{bookInfo.author}}</p>
               <div class="rating-wrapper">
                 <div class="rating-star">
                   <i class="icon-star-solid"></i><i class="icon-star-solid"></i><i class="icon-star-solid"></i><i class="icon-star-half"></i><i class="icon-star-dashed"></i>
                 </div>
-                <p class="rating-info">7.1分 (1.4万人评)</p>
+                <p class="rating-info">{{bookInfo.ratingScore}}分 ({{bookInfo.ratingCount}}人评)</p>
               </div>
-              <p class="category">都市 | 都市生活</p>
-              <p class="words">461.0万字 | 连载</p>
+              <p class="category">{{bookInfo.classifi}} | {{bookInfo.minClass}}</p>
+              <p class="words">{{bookInfo.words}}字 | 连载</p>
             </div>
           </div>
           <div class="book-content">
             <h1 class="short-title">简介</h1>
-            <p class="short-info">李谦重生了。另外一个时空的1995年。在这里，他当然比普通人更容易获得成功。但成功是什么？钱么？或者，名气？地位？荣耀？都是，但不全是。
-            有了那回眸的浅浅一笑，那牵手的刹那温暖，那入怀的淡淡体香；这人生，才称得上完美。【全订群】：74640518【普通群】：450609038【微信公众号】：刀一耕</p>
+            <p class="short-info">{{bookInfo.longInfo}}</p>
             <div class="catalog-wrapper">
               <span class="catalog-title">目录</span>
-              <span class="catalog-info">连载至 1070 章 更新于38分钟前<i class="icon-arrow"></i></span>
+              <span class="catalog-info">连载至 {{bookInfo.lastChapter}} 章 更新于{{bookInfo.update}}<i class="icon-arrow"></i></span>
             </div>
           </div>
           <div class="book-class-wrapper">
             <book-class title="作者其他作品" :data="sameAuthor"></book-class>
           </div>
           <div class="book-class-wrapper">
-            <book-class title="同类作品推荐" :data="sameAuthor"></book-class>
+            <book-class title="同类作品推荐" :data="sameGenre"></book-class>
           </div>
         </div>
       </scroll>
@@ -54,14 +53,22 @@
       <div class="item reading"><i class="icon-read"></i>立即阅读</div>
       <div class="item download"><i class="icon-download"></i>下载</div>
     </div>
+    <div class="loadding-wrapper" v-show="!bookInfo.id">
+      <loading></loading>
+    </div>
   </div>
 </transition>
 </template>
 <script type="text/ecmascript-6">
   import BookClass from 'base/book-class/book-class'
   import Scroll from 'base/scroll/scroll'
+  import Loading from 'base/loading/loading'
 
   import {prefixStyle} from 'common/js/dom'
+  import {getBookInfo} from 'api/handpick'
+  import {getSearchList} from 'api/search'
+  import {book} from 'common/js/books'
+  import {mapGetters} from 'vuex'
 
   const backdrop = prefixStyle('backdrop-filter')
   const transform = prefixStyle('transform')
@@ -71,6 +78,7 @@
       return {
         sameAuthor: [],
         sameGenre: [],
+        bookInfo: {},
         showTopTitle: '',
         scrollY: 0,
         upMove: false
@@ -79,6 +87,14 @@
     created () {
       this.listenScroll = true
       this.probeType = 3
+      setTimeout(() => {
+        this._getBookInfo()
+      }, 20)
+    },
+    computed: {
+      ...mapGetters([
+        'currentBook'
+      ])
     },
     mounted () {
       this.minHeight = -this.$refs.topTitle.clientHeight
@@ -90,6 +106,26 @@
       },
       back () {
         this.$router.back()
+      },
+      _getBookInfo () {
+        if (!this.currentBook.id) {
+          this.back()
+          return
+        }
+        getBookInfo(this.currentBook.id).then(res => {
+          this.bookInfo = book(res.data)
+        })
+
+        getSearchList(this.currentBook.author).then(res => {
+          let list = res.data.books.filter(item => item.author === this.currentBook.author)
+          this.sameAuthor = list.map(item => book(item))
+        })
+
+        getSearchList(this.currentBook.classifi).then(res => {
+          let list = res.data.books.filter(item => item.cat === this.currentBook.classifi)
+          this.sameGenre = list.map(item => book(item)).slice(0, 10)
+          console.log(this.sameGenre)
+        })
       }
     },
     watch: {
@@ -100,7 +136,7 @@
         let blur = 20
         // 当滚动距离超过title高度时候，把书名显示在title上
         if (newY < this.minHeight) {
-          this.showTopTitle = '完美人生'
+          this.showTopTitle = this.bookInfo.title
         } else {
           this.showTopTitle = ''
         }
@@ -126,7 +162,8 @@
     },
     components: {
       BookClass,
-      Scroll
+      Scroll,
+      Loading
     }
   }
 
@@ -282,6 +319,13 @@
                 margin-left 0.625rem
         .book-class-wrapper
           margin-bottom $margin-bottom
+    .loadding-wrapper
+      position fixed
+      top 0
+      left 0
+      right 0
+      bottom 0
+      background rgba(0,0,0, 0.8)      
 
   .bookDetail-enter-active, .bookDetail-leave-active
     transition all 0.3s

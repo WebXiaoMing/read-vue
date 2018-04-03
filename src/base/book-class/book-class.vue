@@ -2,28 +2,13 @@
   <div class="book-class-content">
     <h1 class="class-title"><span class="title-solid"></span>{{title}}</h1>
     <div class="class-book-list" ref="slider">
-      <div class="list-wrapper" ref="sliderGroup">
-        <div class="item">
-          <img class="image" src="./image.png">
-          <p class="book-name">完美人生</p>
-          <p class="reader">12万人读过</p>
-        </div>
-        <div class="item">
-          <img class="image" src="./image.png">
-          <p class="book-name">完美人生</p>
-          <p class="reader">12万人读过</p>
-        </div>
-        <div class="item">
-          <img class="image" src="./image.png">
-          <p class="book-name">完美人生</p>
-          <p class="reader">128.9万人读过</p>
-        </div>
-        <div class="item">
-          <img class="image" src="./image.png">
-          <p class="book-name">完美人生</p>
-          <p class="reader">12万人读过</p>
-        </div>
-      </div>
+      <ul class="list-wrapper" ref="sliderGroup" v-if="data.length">
+        <li class="item" v-for="book in data">
+          <img class="image" :src="book.image">
+          <p class="book-name">{{book.title}}</p>
+          <p class="reader">{{book.star}}人读过</p>
+        </li>
+      </ul>
     </div>
     <div class="book-item"></div>
   </div>
@@ -42,10 +27,10 @@
       },
       refreshDelay: {
         type: Number,
-        default: 20
+        default: 200
       },
     },
-    created () {
+    mounted () {
       setTimeout(() => {
         this._setScrollWidth()
         this._initScroll()
@@ -120,6 +105,7 @@
           padding-right 1.6rem
           .image
             width 5.625rem
+            height 7.3125rem
           .book-name
             font-size $font-size-medium
             color $font-color-dd

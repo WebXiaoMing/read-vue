@@ -46,10 +46,6 @@ export default new Router({
     {
       path: '/mine',
       component: Mine
-    },
-    {
-      path: '/book/:id',
-      component: BookDetail
     }
   ]
 })

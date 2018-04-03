@@ -34,7 +34,7 @@
 <script type="text/ecmascript-6">
   import {rankType} from 'common/js/config'
   import {book} from 'common/js/books'
-  import {mapGetters} from 'vuex'
+  import {mapGetters, mapMutations} from 'vuex'
   import {getRankList} from 'api/handpick'
   import {setPullDownRefresh} from 'common/js/mixin'
 
@@ -66,8 +66,9 @@
         this.$router.back()
       },
       selectBook (item) {
+        this.setCurrentBook(item)
         this.$router.push({
-          path: `/book/${item.id}`
+          path: `/handpick/book/${item.id}`
         })
       },
       changeRank (index) {
@@ -86,7 +87,10 @@
         getRankList(id).then(res => {
           this.rankList = res.data && res.data.ranking.books.map(item => book(item))
         })
-      }
+      },
+      ...mapMutations({
+        'setCurrentBook': 'SET_CURRENT_BOOK'
+      })
     },
     components: {
       BookList,

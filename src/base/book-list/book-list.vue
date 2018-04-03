@@ -35,6 +35,8 @@
   import Scroll from 'base/scroll/scroll'
   import Loading from 'base/loading/loading'
 
+  import {mapMutations} from 'vuex'
+
   export default {
     props: {
       bookList: {
