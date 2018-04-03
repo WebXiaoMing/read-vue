@@ -8,7 +8,7 @@
     </div>
     <div class="bg-layer" ref="bgLayer"></div>
     <div class="book-detail-content" ref="detailContent">
-      <scroll class="content" :data="[]"
+      <scroll class="content" :data="sameAuthor.concat(sameGenre)"
                               :probe-type="probeType"
                               :listen-scroll="listenScroll"
                               @scroll="scroll"
@@ -23,7 +23,9 @@
               <p class="book-author">{{bookInfo.author}}</p>
               <div class="rating-wrapper">
                 <div class="rating-star">
-                  <i class="icon-star-solid"></i><i class="icon-star-solid"></i><i class="icon-star-solid"></i><i class="icon-star-half"></i><i class="icon-star-dashed"></i>
+                  <span v-for="item in starClass">
+                    <i :class="item"></i>
+                  </span>
                 </div>
                 <p class="rating-info">{{bookInfo.ratingScore}}分 ({{bookInfo.ratingCount}}人评)</p>
               </div>
@@ -40,10 +42,10 @@
             </div>
           </div>
           <div class="book-class-wrapper">
-            <book-class title="作者其他作品" :data="sameAuthor"></book-class>
+            <book-class title="作者其他作品" @selectBook="selectBook" :data="sameAuthor"></book-class>
           </div>
           <div class="book-class-wrapper">
-            <book-class title="同类作品推荐" :data="sameGenre"></book-class>
+            <book-class title="同类作品推荐" @selectBook="selectBook" :data="sameGenre"></book-class>
           </div>
         </div>
       </scroll>
@@ -67,8 +69,9 @@
   import {prefixStyle} from 'common/js/dom'
   import {getBookInfo} from 'api/handpick'
   import {getSearchList} from 'api/search'
-  import {book} from 'common/js/books'
-  import {mapGetters} from 'vuex'
+  import {createBooks} from 'common/js/books'
+  import {mapGetters, mapMutations} from 'vuex'
+  import {getStarScore} from 'common/js/util'
 
   const backdrop = prefixStyle('backdrop-filter')
   const transform = prefixStyle('transform')
@@ -81,7 +84,8 @@
         bookInfo: {},
         showTopTitle: '',
         scrollY: 0,
-        upMove: false
+        upMove: false,
+        starClass: []
       }
     },
     created () {
@@ -101,10 +105,17 @@
       this.maxHeight = -this.$refs.bookInfo.clientHeight
     },
     methods: {
+      selectBook (item) {
+        this.setCurrentBook(item)
+        this._getBookInfo()
+      },
       scroll (pos) {
         this.scrollY = pos.y
       },
       back () {
+        this.bookInfo = {}
+        this.sameAuthor = []
+        this.sameGenre = []
         this.$router.back()
       },
       _getBookInfo () {
@@ -113,20 +124,22 @@
           return
         }
         getBookInfo(this.currentBook.id).then(res => {
-          this.bookInfo = book(res.data)
+          this.bookInfo = createBooks(res.data)
         })
 
         getSearchList(this.currentBook.author).then(res => {
           let list = res.data.books.filter(item => item.author === this.currentBook.author)
-          this.sameAuthor = list.map(item => book(item))
+          this.sameAuthor = list.map(item => createBooks(item))
         })
 
         getSearchList(this.currentBook.classifi).then(res => {
           let list = res.data.books.filter(item => item.cat === this.currentBook.classifi)
-          this.sameGenre = list.map(item => book(item)).slice(0, 10)
-          console.log(this.sameGenre)
+          this.sameGenre = list.map(item => createBooks(item)).slice(0, 8)
         })
-      }
+      },
+      ...mapMutations({
+        'setCurrentBook': 'SET_CURRENT_BOOK'
+      })
     },
     watch: {
       scrollY (newY) {
@@ -158,6 +171,11 @@
           this.$refs.bgLayer.style.backgroundPosition = `0 0`
           this.$refs.bgLayer.style[transform] = `scale(${scale})`
         }
+      },
+      bookInfo () {
+        setTimeout(() => {
+          this.starClass = getStarScore(this.bookInfo.ratingScore)
+        }, 20)
       }
     },
     components: {
@@ -325,7 +343,7 @@
       left 0
       right 0
       bottom 0
-      background rgba(0,0,0, 0.8)      
+      background rgba(0,0,0, 0.8)
 
   .bookDetail-enter-active, .bookDetail-leave-active
     transition all 0.3s

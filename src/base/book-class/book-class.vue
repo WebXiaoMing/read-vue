@@ -1,10 +1,10 @@
 <template>
-  <div class="book-class-content">
+  <div class="book-class-content" v-if="data.length">
     <h1 class="class-title"><span class="title-solid"></span>{{title}}</h1>
     <div class="class-book-list" ref="slider">
-      <ul class="list-wrapper" ref="sliderGroup" v-if="data.length">
-        <li class="item" v-for="book in data">
-          <img class="image" :src="book.image">
+      <ul class="list-wrapper" ref="sliderGroup">
+        <li class="item" v-for="book in data" @click="selectBook(book)">
+          <img class="image" v-lazy="book.image">
           <p class="book-name">{{book.title}}</p>
           <p class="reader">{{book.star}}人读过</p>
         </li>
@@ -27,7 +27,7 @@
       },
       refreshDelay: {
         type: Number,
-        default: 200
+        default: 2000
       },
     },
     mounted () {
@@ -37,22 +37,31 @@
       }, this.refreshDelay)
     },
     methods: {
+      selectBook (item) {
+        this.$emit('selectBook', item)
+      },
       _setScrollWidth () {
-        this.children = this.$refs.sliderGroup.children
+        if (!this.data.length) {
+          return
+        }
+        let children = this.$refs.sliderGroup.children
         let width = 0
-        let itemWidth = this.children[0].clientWidth
+        let itemWidth = children[0].clientWidth
 
-        for (let i = 0; i < this.children.length; i ++) {
+        for (let i = 0; i < children.length; i ++) {
           width += itemWidth
         }
 
         this.$refs.sliderGroup.style.width = width + 'px'
       },
       _initScroll () {
+        if (!this.data.length) {
+          return
+        }
         this.scroll = new Bscroll(this.$refs.slider, {
           scrollY: false,
           scrollX: true,
-          click: false,
+          click: true,
           bounce: false
         })
       },
@@ -62,7 +71,7 @@
     },
     watch: {
       data () {
-        setTimeout (() => {
+        setTimeout(() => {
           this.refresh()
         }, this.refreshDelay)
       }

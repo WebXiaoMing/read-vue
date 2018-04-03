@@ -33,7 +33,7 @@
 </template>
 <script type="text/ecmascript-6">
   import {rankType} from 'common/js/config'
-  import {book} from 'common/js/books'
+  import {createBooks} from 'common/js/books'
   import {mapGetters, mapMutations} from 'vuex'
   import {getRankList} from 'api/handpick'
   import {setPullDownRefresh} from 'common/js/mixin'
@@ -85,7 +85,7 @@
           return
         }
         getRankList(id).then(res => {
-          this.rankList = res.data && res.data.ranking.books.map(item => book(item))
+          this.rankList = res.data && res.data.ranking.books.map(item => createBooks(item))
         })
       },
       ...mapMutations({

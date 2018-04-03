@@ -1,6 +1,6 @@
 import {getSearchList} from 'api/search'
 
-class Book {
+export default class Book {
   constructor ({id, title, author, shortInfo, longInfo, star, classifi, minClass, image, ratingCount, ratingScore, words, update, lastChapter, chaptersCount}) {
     this.id = id
     this.title = title
@@ -35,11 +35,11 @@ function getUpdateTime (date) {
   const currentTime = new Date(),
 			 	updateTime = new Date(date),
 			 	fullYear = currentTime.getFullYear() - updateTime.getFullYear(),
-			 	month = currentTime.getMonth() - updateTime.getMonth(), 
-			 	day = currentTime.getDate() - updateTime.getDate(), 
+			 	month = currentTime.getMonth() - updateTime.getMonth(),
+			 	day = currentTime.getDate() - updateTime.getDate(),
 		    hover = currentTime.getHours() - updateTime.getHours(),
 		    minutes = currentTime.getMinutes() - updateTime.getMinutes()
-		
+
 	let ret = ''
 
   switch (true) {
@@ -59,7 +59,7 @@ function getUpdateTime (date) {
       ret = minutes + '分钟前'
       break
     default:
-      ret = '刚才'	
+      ret = '刚才'
   }
 
 	return ret
@@ -75,7 +75,7 @@ function toNumber (str) {
   return a.join('')
 }
 
-export function book (bookItem) {
+export function createBooks (bookItem) {
   return new Book({
     id: bookItem._id, // 书本id
     title: bookItem.title, // 书名

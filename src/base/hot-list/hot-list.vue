@@ -36,7 +36,7 @@
 </template>
 <script type="text/ecmascript-6">
   import {getRankList} from 'api/handpick'
-  import {book} from 'common/js/books'
+  import {createBooks} from 'common/js/books'
   import {mapMutations} from 'vuex'
 
   export default {
@@ -69,7 +69,7 @@
       list (newVal) {
         let id = newVal[4]._id
         getRankList(id).then(res => {
-          this.hotList = res.data.ranking.books.map(item => book(item)).slice(0, 3)
+          this.hotList = res.data.ranking.books.map(item => createBooks(item)).slice(0, 3)
         })
       }
     }
