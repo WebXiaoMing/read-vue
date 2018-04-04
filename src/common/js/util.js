@@ -1,4 +1,6 @@
 export function getStarScore (score) {
+  let ret = []
+  
   if (typeof score === 'undefind') {
     return
   }
@@ -8,7 +10,6 @@ export function getStarScore (score) {
     return
   }
 
-  let ret = []
   for (let i = 0; i < 5; i ++) {
     ret.push('icon-star-dashed')
   }
@@ -19,7 +20,7 @@ export function getStarScore (score) {
 
   if (parseFloat(percent) !== parseInt(percent)) {
     ret[Math.floor(percent)] = 'icon-star-half'
-    ret[Math.floor(percent) - 1] = 'icon-star-solid'
   }
+
   return ret
 }

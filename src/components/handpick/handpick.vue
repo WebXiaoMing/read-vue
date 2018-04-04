@@ -6,7 +6,7 @@
         <span class="arrow-btn" :class="{'active': open}"><i class="icon-arrow"></i></span>
         <div class="switch-box-content">
           <switch-box :currentIndex="currentIndex"
-                      :title="title"
+                      :data="switches"
                       @checkSwitch="checkSwitch"
                       ref="switch"
           />
@@ -70,7 +70,7 @@
     data () {
       return {
         gender: 'male',
-        title: ['男神', '女神'],
+        switches: [{name: '男神'}, {name: '女神'}],
         currentIndex: 0,
         open: false
       }

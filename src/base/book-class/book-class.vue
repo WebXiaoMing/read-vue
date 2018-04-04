@@ -72,8 +72,9 @@
     watch: {
       data () {
         setTimeout(() => {
+          this._setScrollWidth()
           this.refresh()
-        }, this.refreshDelay)
+        }, 20)
       }
     }
   }

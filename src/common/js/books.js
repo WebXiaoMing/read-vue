@@ -83,7 +83,7 @@ export function createBooks (bookItem) {
     shortInfo: bookItem.shortIntro, // 短介
     longInfo: bookItem.longIntro, // 详介
     star: filterNum(bookItem.latelyFollower), // 读者
-    classifi: bookItem.majorCate, // 书类（大分类）
+    classifi: bookItem.cat || bookItem.majorCate, // 书类（大分类）
     minClass: bookItem.minorCate, // 书类（小分类）
     image: `http://statics.zhuishushenqi.com${bookItem.cover}`, // 书本图片
     ratingCount: bookItem.rating && filterNum(bookItem.rating.count), // 评分人数

@@ -14,3 +14,13 @@ export function getRankList (id) {
 export function getBookInfo (id) {
   return Vue.http.get('/book/'+ id)
 }
+
+// 获取小说源
+export function getMixinSource (id) {
+  return Vue.http.get('/atoc?view=summary&book=' + id)
+}
+
+// 获取章节信息
+export function getChapters (id) {
+  return Vue.http.get(`/atoc/${id}?view=chapters`)
+}

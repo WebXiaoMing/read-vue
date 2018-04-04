@@ -3,7 +3,7 @@
   <div class="book-detail">
     <div class="top-title">
       <i class="icon-back" @click="back"></i>
-      <p class="top-book-name">{{showTopTitle}}</p>
+      <p class="top-book-name" v-show="showTopTitle">{{topTitle}}</p>
       <div class="top-title-layer" v-show="upMove" ref="topTitle"></div>
     </div>
     <div class="bg-layer" ref="bgLayer"></div>
@@ -12,6 +12,7 @@
                               :probe-type="probeType"
                               :listen-scroll="listenScroll"
                               @scroll="scroll"
+                              ref="content"
       >
         <div>
           <div class="book-info-wrapper" ref="bookInfo">
@@ -36,9 +37,9 @@
           <div class="book-content">
             <h1 class="short-title">简介</h1>
             <p class="short-info">{{bookInfo.longInfo}}</p>
-            <div class="catalog-wrapper">
+            <div class="catalog-wrapper" @click="showChapters">
               <span class="catalog-title">目录</span>
-              <span class="catalog-info">连载至 {{bookInfo.lastChapter}} 章 更新于{{bookInfo.update}}<i class="icon-arrow"></i></span>
+              <span class="catalog-info">连载至 {{bookInfo.chaptersCount}} 章 更新于{{bookInfo.update}}<i class="icon-arrow"></i></span>
             </div>
           </div>
           <div class="book-class-wrapper">
@@ -58,6 +59,14 @@
     <div class="loadding-wrapper" v-show="!bookInfo.id">
       <loading></loading>
     </div>
+    <div class="book-chapters-wrapper">
+      <book-chapters :chapters="chapters"
+                      ref="chapters"
+                      name="right"
+                      :title="bookInfo.title"
+                      :author="bookInfo.author"
+      />
+    </div>
   </div>
 </transition>
 </template>
@@ -65,9 +74,10 @@
   import BookClass from 'base/book-class/book-class'
   import Scroll from 'base/scroll/scroll'
   import Loading from 'base/loading/loading'
+  import BookChapters from 'base/book-chapters/book-chapters'
 
   import {prefixStyle} from 'common/js/dom'
-  import {getBookInfo} from 'api/handpick'
+  import {getBookInfo, getMixinSource, getChapters} from 'api/handpick'
   import {getSearchList} from 'api/search'
   import {createBooks} from 'common/js/books'
   import {mapGetters, mapMutations} from 'vuex'
@@ -82,10 +92,14 @@
         sameAuthor: [],
         sameGenre: [],
         bookInfo: {},
-        showTopTitle: '',
+        source: [],
+        bookId: '',
+        chapters: [],
+        topTitle: '',
+        showTopTitle: false,
         scrollY: 0,
         upMove: false,
-        starClass: []
+        starClass: [],
       }
     },
     created () {
@@ -93,6 +107,7 @@
       this.probeType = 3
       setTimeout(() => {
         this._getBookInfo()
+        this._getMixinSource()
       }, 20)
     },
     computed: {
@@ -105,9 +120,34 @@
       this.maxHeight = -this.$refs.bookInfo.clientHeight
     },
     methods: {
+      showChapters () {
+        this.$refs.chapters.show()
+        this.showFlag = true
+      },
+      _getChapters () {
+        getChapters(this.bookId).then(res => {
+          if (res.statusText === 'OK') {
+            this.chapters = res.data.chapters
+          }
+        })
+      },
+      _getMixinSource () {
+        if (!this.currentBook.id) {
+          this.back()
+          return
+        }
+        getMixinSource(this.currentBook.id).then(res => {
+          if (res.statusText !== 'OK') {
+            return
+          }
+          this.source = res.data
+          this.bookId = res.data[0]._id
+        })
+      },
       selectBook (item) {
         this.setCurrentBook(item)
         this._getBookInfo()
+        this.topTitle = this.bookInfo.title
       },
       scroll (pos) {
         this.scrollY = pos.y
@@ -149,9 +189,9 @@
         let blur = 20
         // 当滚动距离超过title高度时候，把书名显示在title上
         if (newY < this.minHeight) {
-          this.showTopTitle = this.bookInfo.title
+          this.showTopTitle = true
         } else {
-          this.showTopTitle = ''
+          this.showTopTitle = false
         }
         // 向上滚动的时候 实时改变背景图片的position 使其有向上滑动的特效
         if (newY < 0) {
@@ -174,14 +214,23 @@
       },
       bookInfo () {
         setTimeout(() => {
+          this.topTitle = this.bookInfo.title
           this.starClass = getStarScore(this.bookInfo.ratingScore)
+          this._getMixinSource()
+          this._getChapters()
         }, 20)
+      },
+      bookId (newId, oldId) {
+        if (newId !== oldId) {
+          this._getChapters()
+        }
       }
     },
     components: {
       BookClass,
       Scroll,
-      Loading
+      Loading,
+      BookChapters
     }
   }
 
@@ -344,6 +393,9 @@
       right 0
       bottom 0
       background rgba(0,0,0, 0.8)
+    .book-chapters-wrapper
+      width 100%
+      height 100%
 
   .bookDetail-enter-active, .bookDetail-leave-active
     transition all 0.3s

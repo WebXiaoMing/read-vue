@@ -3,9 +3,9 @@
     <div class="switch-box-wrapper" v-show="showFlag">
       <div class="tip"></div>
       <div class="switch-content">
-        <div class="switch-item" v-for="(item, index) in title"
+        <div class="switch-item" v-for="(item, index) in data"
                                 @click.stop="checkSwitch(index)"
-        >{{item}}<i class="icon-ok" v-show="index === currentIndex"></i></div>
+        >{{item.name}}<i class="icon-ok" v-show="index === currentIndex"></i></div>
       </div>
     </div>
    </transition>
@@ -13,7 +13,7 @@
 <script type="text/ecmascript-6">
   export default {
     props: {
-      title: {
+      data: {
         type: Array,
         default: []
       },
