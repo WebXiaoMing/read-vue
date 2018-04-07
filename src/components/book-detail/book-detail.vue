@@ -1,9 +1,16 @@
 <template>
 <transition name="bookDetail">
-  <div class="book-detail">
+  <div class="book-detail" @click.stop="hideSwitch">
     <div class="top-title">
       <i class="icon-back" @click="back"></i>
       <p class="top-book-name" v-show="showTopTitle">{{topTitle}}</p>
+      <div class="source-wrapper" @click.stop="showSwitch">
+        <span class="text">换源</span>
+        <source-box ref="switch" :data="source"
+                                 :currentIndex="currentIndex"
+                                 @checkSwitch="changeSource"
+        />
+      </div>
       <div class="top-title-layer" v-show="upMove" ref="topTitle"></div>
     </div>
     <div class="bg-layer" ref="bgLayer"></div>
@@ -34,7 +41,7 @@
               <p class="words">{{bookInfo.words}}字 | 连载</p>
             </div>
           </div>
-          <div class="book-content">
+          <div class="book-content" v-show="bookInfo.id">
             <h1 class="short-title">简介</h1>
             <p class="short-info">{{bookInfo.longInfo}}</p>
             <div class="catalog-wrapper" @click="showChapters">
@@ -52,8 +59,8 @@
       </scroll>
     </div>
     <div class="book-detail-btn">
-      <div class="item addbook"><i class="icon-addbook"></i>加入书架</div>
-      <div class="item reading"><i class="icon-read"></i>立即阅读</div>
+      <div class="item addbook" :class="hasCollect"><i class="icon-addbook" @click="addToBookShelf"></i>{{collectText}}</div>
+      <div class="item reading"><i class="icon-read" @click="starReading"></i>立即阅读</div>
       <div class="item download"><i class="icon-download"></i>下载</div>
     </div>
     <div class="loadding-wrapper" v-show="!bookInfo.id">
@@ -62,11 +69,12 @@
     <div class="book-chapters-wrapper">
       <book-chapters :chapters="chapters"
                       ref="chapters"
-                      name="right"
                       :title="bookInfo.title"
                       :author="bookInfo.author"
+                      @select="select"
       />
     </div>
+    <p class="add-text" :class="{'active': showAdd}">加入书架成功</p>
   </div>
 </transition>
 </template>
@@ -75,12 +83,13 @@
   import Scroll from 'base/scroll/scroll'
   import Loading from 'base/loading/loading'
   import BookChapters from 'base/book-chapters/book-chapters'
+  import SourceBox from 'base/source-box/source-box'
 
   import {prefixStyle} from 'common/js/dom'
   import {getBookInfo, getMixinSource, getChapters} from 'api/handpick'
   import {getSearchList} from 'api/search'
   import {createBooks} from 'common/js/books'
-  import {mapGetters, mapMutations} from 'vuex'
+  import {mapGetters, mapMutations, mapActions} from 'vuex'
   import {getStarScore} from 'common/js/util'
 
   const backdrop = prefixStyle('backdrop-filter')
@@ -92,6 +101,7 @@
         sameAuthor: [],
         sameGenre: [],
         bookInfo: {},
+        currentIndex: 0,
         source: [],
         bookId: '',
         chapters: [],
@@ -100,6 +110,8 @@
         scrollY: 0,
         upMove: false,
         starClass: [],
+        collected: false,
+        showAdd: false
       }
     },
     created () {
@@ -111,8 +123,15 @@
       }, 20)
     },
     computed: {
+      hasCollect () {
+        return this.collected ? 'collected' : ''
+      },
+      collectText () {
+        return this.collected ? '已在书架' : '加入书架'
+      },
       ...mapGetters([
-        'currentBook'
+        'currentBook',
+        'collectList'
       ])
     },
     mounted () {
@@ -120,9 +139,58 @@
       this.maxHeight = -this.$refs.bookInfo.clientHeight
     },
     methods: {
+      addToBookShelf () {
+        if (this.collected) {
+          return
+        }
+        this.collected = true
+        this.showAdd = true
+        this.saveStorageList({
+          bookInfo: this.bookInfo,
+          index: 0,
+          id: this.bookId
+        })
+        setTimeout(() => {
+          this.showAdd = false
+        }, 1000)
+      },
+      filterStorage () {
+        if (!this.collectList.length || !this.bookInfo.id) {
+          this.collected = false
+          return
+        }
+        this.collected = this.collectList.some(item => item.bookInfo.id === this.bookInfo.id)
+      },
+      select (item, index) {
+        this.selectRead({
+          id: this.bookId,
+          list: this.chapters,
+          index: index
+        })
+        this.$refs.chapters.hide()
+      },
+      starReading () {
+        this.selectRead({
+          id: this.bookId,
+          list: this.chapters,
+          index: 0
+        })
+      },
+      showSwitch () {
+        this.$refs.switch.show()
+      },
+      hideSwitch () {
+        this.$refs.switch.hide()
+      },
+      changeSource (item, index) {
+        if (this.currentIndex === index) {
+          return
+        }
+        this.currentIndex = index
+        this.bookId = item._id
+      },
       showChapters () {
         this.$refs.chapters.show()
-        this.showFlag = true
       },
       _getChapters () {
         getChapters(this.bookId).then(res => {
@@ -178,8 +246,12 @@
         })
       },
       ...mapMutations({
-        'setCurrentBook': 'SET_CURRENT_BOOK'
-      })
+        setCurrentBook: 'SET_CURRENT_BOOK'
+      }),
+      ...mapActions([
+        'selectRead',
+        'saveStorageList'
+      ])
     },
     watch: {
       scrollY (newY) {
@@ -218,6 +290,7 @@
           this.starClass = getStarScore(this.bookInfo.ratingScore)
           this._getMixinSource()
           this._getChapters()
+          this.filterStorage()
         }, 20)
       },
       bookId (newId, oldId) {
@@ -230,7 +303,8 @@
       BookClass,
       Scroll,
       Loading,
-      BookChapters
+      BookChapters,
+      SourceBox
     }
   }
 
@@ -248,6 +322,23 @@
     bottom 0
     height 100%
     background $background-color-d
+    .add-text
+      position absolute
+      top 50%
+      left 50%
+      height 3rem
+      width 12rem
+      margin -1.5rem 0 0 -6rem
+      text-align center
+      line-height 3rem
+      border-radius 0.25rem
+      color #fff
+      background rgba(0,0,0,0.9)
+      tansition all 0.3s
+      opacity 0
+      &.active
+        transition all 0.3s
+        opacity 1
     .book-detail-btn
       position fixed
       left 0
@@ -257,13 +348,17 @@
       display flex
       box-sizing border-box
       background $background-color-d
-      border-top 1px solid $border-color
+      border-top 1px solid $border-color-m
       .item
         display flex
         flex-direction column
         justify-content center
         text-align center
         font-size $font-size-small-s
+        color $theme-color
+        &.collected
+          color $font-color-l
+          background $background-color
         i
           font-size $font-size-large-xx
           margin-bottom 0.25rem
@@ -276,10 +371,24 @@
     .top-title
       position fixed
       top 0
+      z-index 1
       width 100%
       height 2.75rem
       line-height 2.75rem
       color $background-color
+      .source-wrapper
+        position absolute
+        right 1rem
+        top 0
+        font-size $font-size-medium
+        .icon-arrow
+          display inline-block
+          margin-left 0.5rem
+          transform rotate(-90deg)
+          transition all 0.3s
+          &.active
+            transform rotate(0deg)
+            transition all 0.3s
       .top-title-layer
         position absolute
         top 0
@@ -392,6 +501,7 @@
       left 0
       right 0
       bottom 0
+      z-index 998
       background rgba(0,0,0, 0.8)
     .book-chapters-wrapper
       width 100%

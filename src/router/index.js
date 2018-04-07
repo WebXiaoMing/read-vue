@@ -15,7 +15,7 @@ export default new Router({
   routes: [
     {
       path: '/',
-      redirect: '/bookshelf'
+      redirect: '/handpick/'
     },
     {
       path: '/bookshelf',

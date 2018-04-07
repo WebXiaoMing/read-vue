@@ -1,109 +1,35 @@
 <template>
   <div class="book-shelf-wrapper">
     <div class="top-bar"></div>
-    <scroll :bounce="bounce" class="book-shelf-content" :data="[]">
+    <scroll :bounce="bounce" class="book-shelf-content" :data="bookList" ref="scroll">
       <div>
         <div class="recent-box">
-          <div class="recent-book-wrapper">
+          <h1 class="recent-title" v-show="!readingBook.id">心有猛虎 细嗅蔷薇</h1>
+          <div class="recent-book-wrapper" v-if="readingBook.id">
             <div class="image">
-              <img src="" alt="">
+              <img :src="readingBook.bookInfo.image"/>
             </div>
             <div class="book-info">
-              <h1 class="book-name">斗罗大陆3龙王传说</h1>
-              <h2 class="book-author">唐家三少</h2>
-              <p class="recent-read">楔子</p>
-              <div class="continue-read">继续阅读</div>
+              <h1 class="book-name">{{readingBook.bookInfo.title}}</h1>
+              <h2 class="book-author">{{readingBook.bookInfo.author}}</h2>
+              <p class="recent-read">{{readingBook.lastChapter}}</p>
+              <div class="continue-read" @click="recentRead">继续阅读</div>
             </div>
           </div>
         </div>
         <div class="library">
-          <div class="library-item">
+          <div class="library-item" v-for="item in bookList"
+                                    @click="selectBook(item)"
+                                    @touchstart="onTouchstart(item)"
+                                    @touchmove="onTouchmove"
+                                    @touchend="onTouchend"
+          >
             <div class="library-item-wrapper">
               <div class="library-image">
-                <img src="" alt="">
+                <img :src="item.bookInfo.image" alt="">
               </div>
               <div class="library-name">
-                <p class="name">斗罗大陆3龙王传说</p>
-              </div>
-            </div>
-          </div>
-          <div class="library-item">
-            <div class="library-item-wrapper">
-              <div class="library-image">
-                <img src="" alt="">
-              </div>
-              <div class="library-name">
-                <p class="name">斗罗大陆3龙王传说大叫好好很舒服很多继父回家双方都快捷快递三跪九叩</p>
-              </div>
-            </div>
-          </div>
-          <div class="library-item">
-            <div class="library-item-wrapper">
-              <div class="library-image">
-                <img src="" alt="">
-              </div>
-              <div class="library-name">
-                <p class="name">斗罗大陆3龙王传说大叫好好很舒服很多继父回家双方都快捷快递三跪九叩</p>
-              </div>
-            </div>
-          </div>
-          <div class="library-item">
-            <div class="library-item-wrapper">
-              <div class="library-image">
-                <img src="" alt="">
-              </div>
-              <div class="library-name">
-                <p class="name">斗罗大陆3龙王传说大叫好好很舒服很多继父回家双方都快捷快递三跪九叩</p>
-              </div>
-            </div>
-          </div>
-          <div class="library-item">
-            <div class="library-item-wrapper">
-              <div class="library-image">
-                <img src="" alt="">
-              </div>
-              <div class="library-name">
-                <p class="name">斗罗大陆3龙王传说大叫好好很舒服很多继父回家双方都快捷快递三跪九叩</p>
-              </div>
-            </div>
-          </div>
-          <div class="library-item">
-            <div class="library-item-wrapper">
-              <div class="library-image">
-                <img src="" alt="">
-              </div>
-              <div class="library-name">
-                <p class="name">斗罗大陆3龙王传说大叫好好很舒服很多继父回家双方都快捷快递三跪九叩</p>
-              </div>
-            </div>
-          </div>
-          <div class="library-item">
-            <div class="library-item-wrapper">
-              <div class="library-image">
-                <img src="" alt="">
-              </div>
-              <div class="library-name">
-                <p class="name">斗罗大陆3龙王传说大叫好好很舒服很多继父回家双方都快捷快递三跪九叩</p>
-              </div>
-            </div>
-          </div>
-          <div class="library-item">
-            <div class="library-item-wrapper">
-              <div class="library-image">
-                <img src="" alt="">
-              </div>
-              <div class="library-name">
-                <p class="name">斗罗大陆3龙王传说大叫好好很舒服很多继父回家双方都快捷快递三跪九叩</p>
-              </div>
-            </div>
-          </div>
-          <div class="library-item">
-            <div class="library-item-wrapper">
-              <div class="library-image">
-                <img src="" alt="">
-              </div>
-              <div class="library-name">
-                <p class="name">斗罗大陆3龙王传说</p>
+                <p class="name">{{item.bookInfo.title}}</p>
               </div>
             </div>
           </div>
@@ -115,19 +41,93 @@
         </div>
       </div>
     </scroll>
+    <confirm ref="confirm"
+             maxTitle="删除书籍"
+             minTitle="你确定要删除该书籍吗？"
+             @selectConfirm="selectConfirm"
+    />
   </div>
 </template>
 <script type="text/ecmascript-6">
   import Scroll from 'base/scroll/scroll'
+  import Confirm from 'base/confirm/confirm'
+  import {mapGetters, mapActions, mapMutations} from 'vuex'
+  import {getChapters} from 'api/handpick'
 
   export default {
     data () {
       return {
-        bounce: false
+        bounce: false,
+        bookList: [],
+        readingBook: {},
+        currentItem: {}
+      }
+    },
+    created () {
+      this.bookList = this.collectList
+      this.readingBook = this.lastReading
+    },
+    methods: {
+      onTouchstart (item) {
+        this.currentItem = item
+        this.timer = setTimeout(() => {
+          this.$refs.confirm.show()
+        }, 800)
+      },
+      onTouchmove () {
+        clearTimeout(this.timer)
+      },
+      onTouchend () {
+        clearTimeout(this.timer)
+      },
+      selectConfirm () {
+        this.deleteBook(this.currentItem)
+      },
+      recentRead () {
+        this.refreshRead(this.readingBook)
+      },
+      selectBook (item) {
+        this.refreshRead(item)
+      },
+      refreshRead (item) {
+        this.setReadingState(true)
+        this.setCurrentBook(item.bookInfo)
+        getChapters(item.id).then(res => {
+          if (res.statusText === 'OK') {
+            this.selectRead({
+              id: item.bookInfo.id,
+              list: res.data.chapters,
+              index: item.index
+            })
+          }
+        })
+      },
+      ...mapActions([
+        'selectRead',
+        'deleteBook'
+      ]),
+      ...mapMutations({
+        setReadingState: 'SET_READING_STATE',
+        setCurrentBook: 'SET_CURRENT_BOOK'
+      })
+    },
+    computed: {
+      ...mapGetters([
+        'collectList',
+        'lastReading'
+      ])
+    },
+    watch: {
+      collectList () {
+        this.bookList = this.collectList
+      },
+      lastReading () {
+        this.readingBook = this.lastReading
       }
     },
     components: {
-      Scroll
+      Scroll,
+      Confirm
     }
   }
 </script>
@@ -156,7 +156,17 @@
     .recent-box
       width 100%
       height 16.125rem
+      position relative
       background $theme-color
+      .recent-title
+        position absolute
+        top 50%
+        width 70%
+        left 15%
+        text-align center
+        font-size $font-size-large-x
+        transform translate(0, -50%)
+        color #fff
       .recent-book-wrapper
         width 70%
         margin 0 auto
@@ -165,8 +175,10 @@
         .image
           width 6.375rem
           height 8.75rem
-          background #fff
-          border-radius 0.5rem
+          img
+            width 100%
+            height 100%
+            border-radius 0.5rem
         .book-info
           flex 1
           text-align left
@@ -207,6 +219,11 @@
             background #ccc
             border 1px solid $border-color
             border-radius 0.25rem
+            img
+              width 100%
+              height 100%
+              border 1px solid $border-color
+              border-radius 0.25rem
           .library-name
             vertical-align bottom
             width 100%

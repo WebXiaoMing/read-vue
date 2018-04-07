@@ -60,8 +60,12 @@
         this._initScroll()
         this.scroll.refresh()
       }, 20)
+      this.scrollY = 0
     },
     methods: {
+      onscroll (pos) {
+        this.scrollY = pos.y
+      },
       _initScroll () {
         if (!this.$refs.wrapper) {
           return
@@ -78,6 +82,14 @@
         if (this.pulldown) {
           this.scroll.on('pullingDown', () => {
             this.$emit('onPullingDown')
+          })
+        }
+
+        if (this.pullup) {
+          this.scroll.on('scrollEnd', () => {
+            if (this.scroll.y <= (this.scroll.maxScrollY + 50)) {
+              this.$emit('scrollToEnd')
+            }
           })
         }
 

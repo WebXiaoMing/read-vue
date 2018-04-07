@@ -47,7 +47,7 @@
   height 3.125rem
   box-sizing border-box
   background $background-color-d
-  border-top 1px solid $border-color
+  border-top 1px solid $border-color-m
   .tab
     width 100%
     height 100%

@@ -24,3 +24,8 @@ export function getMixinSource (id) {
 export function getChapters (id) {
   return Vue.http.get(`/atoc/${id}?view=chapters`)
 }
+
+// 获取小说章节内容
+export function getChapterText (chapterUrl) {
+  return Vue.http.get(`/getChapter?chapterUrl=${chapterUrl}`)
+}

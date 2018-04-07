@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 
 import state from './state'
 import mutations from './mutations'
+import * as actions from './actions'
 import * as getters from './getters'
 import createLogger from 'vuex/dist/logger'
 
@@ -14,6 +15,7 @@ export default new Vuex.Store({
   getters,
   state,
   mutations,
+  actions,
   strict: debug,
   plugins: debug ? [createLogger()] : []
 })

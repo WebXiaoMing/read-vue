@@ -1,5 +1,5 @@
 <template>
-<transition :name="name">
+<transition name="fade">
   <div class="chapters" v-show="showFlag">
     <div class="chapters-title">
       <i class="icon-back" @click="hide"></i>
@@ -11,15 +11,20 @@
     <div class="chapters-group">
       <scroll class="chapters-content" :data="chapters">
         <div class="chapters-list">
-          <p class="item" v-for="(item, index) in chapters">{{item.title}}</p>
+          <p class="item" v-for="(item, index) in chapters" @click.stop.prevent="selectChapter(item, index)">{{item.title}}</p>
+        </div>
+        <div class="loading-wrapper" v-show="!chapters || !chapters.length">
+          <loading></loading>
         </div>
       </scroll>
     </div>
   </div>
-</transition>  
+</transition>
 </template>
 <script type="text/ecmascript-6">
   import Scroll from 'base/scroll/scroll'
+  import Loading from 'base/loading/loading'
+
   export default {
     props: {
       chapters: {
@@ -31,10 +36,6 @@
         default: ''
       },
       author: {
-        type: String,
-        default: ''
-      },
-      name: {
         type: String,
         default: ''
       }
@@ -50,17 +51,26 @@
       },
       hide () {
         this.showFlag = false
+      },
+      selectChapter (item, index) {
+        this.$emit('select', item, index)
       }
     },
     components: {
-      Scroll
+      Scroll,
+      Loading
     }
   }
 </script>
 <style lang="stylus">
   @import '~common/stylus/variable.styl'
   .chapters
-    position absolute
+    position fixed
+    top 0
+    left 0
+    right 0
+    bottom 0
+    z-index 999
     width 100%
     height 100%
     background $background-color
@@ -95,7 +105,7 @@
       left 0
       right 0
       bottom 0
-      background $background-color-m    
+      background $background-color-m
       .chapters-content
         overflow hidden
         height 100%
@@ -108,10 +118,10 @@
             border-bottom 1px solid $border-color
             font-size $font-size-medium
             text-indent 1rem
-  .right-enter-active, .right-leave-active
+  .fade-enter-active, .fade-leave-active
     transition all 0.3s
-  .right-enter, .right-leave-to
+  .fade-enter, .fade-leave-to
     transform translate3d(100%, 0, 0)
-    opacity 0         
+    opacity 0
 </style>
 
