@@ -10,7 +10,22 @@ module.exports = {
     // Paths
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
-    proxyTable: {},
+    proxyTable: {
+      '/chapterapi': {
+        target: 'http://chapter2.zhuishushenqi.com/chapter/http://vip.zhuishushenqi.com',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/chapterapi': ''
+        }
+      },
+      '/api': {
+        target: 'http://api.zhuishushenqi.com',
+        changeOrigin: true,
+        pathRewrite: {
+            '^/api': ''
+        }
+      }
+    },
 
     // Various Dev Server settings
     host: '0.0.0.0', // can be overwritten by process.env.HOST

@@ -83,7 +83,7 @@
         width 100%
         height 7.4375rem
         background $background-color
-        margin-bottom 0.5rem
+        border-bottom 1px solid $border-color
         padding 1rem
         box-sizing border-box
         display flex

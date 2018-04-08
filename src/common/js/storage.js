@@ -37,7 +37,7 @@ export const deleteStorage = function (obj) {
   let index = storages.findIndex(item => {
     return item.bookInfo.id === obj.bookInfo.id
   })
-  if (index > 0) {
+  if (index >= 0) {
     storages.splice(index, 1)
   }
   storage.set(BOOK_KEY, storages)

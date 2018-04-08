@@ -162,11 +162,11 @@
         this.$refs.chapters.hide()
       },
       _getChapterText (index) {
-        if (!this.chapters || typeof this.chapters[index].link === 'undefined') {
+        if (!this.chapters || typeof this.chapters[index].id === 'undefined') {
           return
         }
-        const url = this.chapters[index].link
-        getChapterText(url).then(res => {
+        const id = this.chapters[index].id
+        getChapterText(id).then(res => {
           let item = getChapter(res.data.chapter)
           this.chapterList.push(item)
           this.title = item.title
@@ -178,7 +178,7 @@
         this.groupHeight = this.$refs.textGroup.clientHeight
       },
       scrollToEnd () {
-        if (this.currentChapter >= this.chapters.length - 1) {
+        if (typeof this.chapters === 'undefined' || this.currentChapter >= this.chapters.length - 1) {
           return
         }
         // 如果正在加载...

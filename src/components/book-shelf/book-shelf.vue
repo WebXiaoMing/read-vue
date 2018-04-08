@@ -33,7 +33,7 @@
               </div>
             </div>
           </div>
-          <div class="library-item">
+          <div class="library-item" @click="gotoAddBook">
             <div class="library-item-wrapper add-wrapper">
               <i class="icon-add"></i>
             </div>
@@ -68,6 +68,11 @@
       this.readingBook = this.lastReading
     },
     methods: {
+      gotoAddBook () {
+        this.$router.push({
+          path: '/handpick/'
+        })
+      },
       onTouchstart (item) {
         this.currentItem = item
         this.timer = setTimeout(() => {

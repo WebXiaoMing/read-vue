@@ -9,7 +9,7 @@ import 'common/stylus/index.styl'
 Vue.config.productionTip = false
 
 Vue.use(Ajax, {
-  baseURL: 'http://65.49.197.99:3000/'
+  baseURL: '/api'
 })
 
 Vue.use(VueLazyload, {

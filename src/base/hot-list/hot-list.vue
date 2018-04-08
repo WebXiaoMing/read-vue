@@ -99,14 +99,13 @@
       float right
       font-size $font-size-medium
   .hot-book-list
+    border-bottom 1px solid $border-color
     .hot-top-book
       width 100%
       height 7.8125rem
       padding 0.75rem 0
       display flex
       &.middle
-        border-bottom 1px solid $border-color
-        border-top 1px solid $border-color
       .top-book-left
         width 5.625rem
         margin-right 1rem

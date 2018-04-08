@@ -2,8 +2,8 @@
   <div class="confirm-wrapper" v-show="showFlag">
     <div class="confirm-box">
       <div class="top-title">
-        <h1 class="max-title">加入书架</h1>
-        <h2 class="min-title">喜欢这本书就加入书架吧？</h2>
+        <h1 class="max-title">{{maxTitle}}</h1>
+        <h2 class="min-title">{{minTitle}}</h2>
       </div>
       <div class="item cancel" @click="selectCancel">取消</div>
       <div class="item confirm" @click="selectConfirm">确定</div>
