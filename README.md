@@ -1,6 +1,6 @@
 # read-vue
-#技术栈
-Vue2 + vuex + vue-router + webpack + ES6 + axios + sass
+# 技术栈
+Vue2 + vuex + vue-router + webpack + ES6 + axios + stylus
 
 ## Build Setup
 
