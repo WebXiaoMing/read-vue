@@ -18,7 +18,9 @@ Vue2 + vuex + vue-router + webpack + ES6 + axios + stylus
 ## 项目运行
 
 git clone https://github.com/WebXiaoMing/read-vue
+
 cd read-vue
+
 npm install
 
 npm run dev（本地运行 访问：http://localhost:8080）
