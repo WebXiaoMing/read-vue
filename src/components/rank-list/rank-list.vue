@@ -1,5 +1,5 @@
 <template>
-  <transition name="fade">
+  <transition name="rank">
     <div class="rank">
       <div class="rank-wrapper">
         <div class="rank-title">
@@ -68,7 +68,7 @@
       selectBook (item) {
         this.setCurrentBook(item)
         this.$router.push({
-          path: `/handpick/book/${item.id}`
+          path: `/book/${item.id}`
         })
       },
       changeRank (index) {
@@ -157,9 +157,9 @@
         width 100%
         height 100%
         overflow hidden
-  .fade-enter-active, .fade-leave-active
+  .rank-enter-active, .rank-leave-active
     transition all 0.3s
-  .fade-enter, .fade-leave-to
+  .rank-enter, .rank-leave-to
     transform translate3d(100%, 0, 0)
     opacity 0
 </style>

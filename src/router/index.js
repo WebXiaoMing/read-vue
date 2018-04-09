@@ -9,43 +9,57 @@ const Search = () => import('components/search/search')
 const Mine = () => import('components/mine/mine')
 const RankList = () => import('components/rank-list/rank-list')
 const BookDetail = () => import('components/book-detail/book-detail')
+const Category = () => import('components/category/category')
 
 
 export default new Router({
   routes: [
     {
       path: '/',
-      redirect: '/handpick/'
+      redirect: '/handpick/',
+      meta: { keepAlive: true }
     },
     {
       path: '/bookshelf',
-      component: BookShelf
+      component: BookShelf,
+      meta: { keepAlive: true }
     },
     {
       path: '/handpick/',
       component: Handpick,
+      meta: { keepAlive: true },
       children: [
         {
           path: ':rank/',
           component: RankList,
-        },
-        {
-          path: 'book/:id',
-          component: BookDetail
         }
       ]
     },
     {
       path: '/classify',
-      component: Classify
+      component: Classify,
+      meta: { keepAlive: true }
     },
     {
       path: '/search',
+      meta: { keepAlive: true },
       component: Search
     },
     {
       path: '/mine',
+      meta: { keepAlive: true },
       component: Mine
+    },
+    {
+      path: '/book/:id',
+      name: 'book',
+      component: BookDetail,
+      meta: { keepAlive: false }
+    },
+    {
+      path: '/category/:name',
+      meta: { keepAlive: true },
+      component: Category
     }
   ]
 })

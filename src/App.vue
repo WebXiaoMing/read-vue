@@ -1,8 +1,9 @@
 <template>
   <div id="app">
-    <keep-alive>
-      <router-view></router-view>
+    <keep-alive :exclude="['book']">
+      <router-view v-if="$route.meta.keepAlive"></router-view>
     </keep-alive>
+    <router-view v-if="!$route.meta.keepAlive"></router-view>
     <tabs></tabs>
     <book-text></book-text>
   </div>
