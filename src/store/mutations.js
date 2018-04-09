@@ -7,9 +7,6 @@ const mutations = {
   [types.SET_CURRENT_BOOK] (state, book) {
     state.currentBook = book
   },
-  [types.SET_READING_STATE] (state, flag) {
-    state.reading = flag
-  },
   [types.SET_CHAPTERS_LIST] (state, list) {
     state.chapters = list
   },

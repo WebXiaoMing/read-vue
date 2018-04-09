@@ -15,7 +15,14 @@ export function getRankList (id) {
 export function getBookInfo (id) {
   return Vue.http.get('/book/'+ id)
 }
-
+// 获取同类作品推荐
+export function getRecommendBook (id) {
+  return Vue.http.get(`/book/${id}/recommend`)
+}
+// 获取小说评论列表
+export function getReviewsList (id, count) {
+  return Vue.http.get(`/post/review/best-by-book?book=${id}&&sort=comment-count&start=0&limit=${count}`)
+}
 // 获取小说源
 export function getMixinSource (id) {
   return Vue.http.get('/btoc?view=summary&book=' + id)

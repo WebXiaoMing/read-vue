@@ -95,7 +95,6 @@
         this.refreshRead(item)
       },
       refreshRead (item) {
-        this.setReadingState(true)
         this.setCurrentBook(item.bookInfo)
         getChapters(item.id).then(res => {
           if (res.statusText === 'OK') {
@@ -105,6 +104,9 @@
               index: item.index
             })
           }
+          this.$router.push({
+            path: `/booktext/${item.id}`
+          })
         })
       },
       ...mapActions([
@@ -112,7 +114,6 @@
         'deleteBook'
       ]),
       ...mapMutations({
-        setReadingState: 'SET_READING_STATE',
         setCurrentBook: 'SET_CURRENT_BOOK'
       })
     },

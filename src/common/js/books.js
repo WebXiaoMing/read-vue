@@ -1,7 +1,7 @@
 import {getSearchList} from 'api/search'
 
 export default class Book {
-  constructor ({id, title, author, shortInfo, longInfo, star, classifi, minClass, image, ratingCount, ratingScore, words, update, lastChapter, chaptersCount}) {
+  constructor ({id, title, author, shortInfo, longInfo, star, classifi, minClass, image, ratingCount, ratingScore, words, update, lastChapter, isSerial, chaptersCount}) {
     this.id = id
     this.title = title
     this.author = author
@@ -17,6 +17,7 @@ export default class Book {
     this.update = update
     this.lastChapter = lastChapter
     this.chaptersCount = chaptersCount
+    this.isSerial = isSerial
   }
 }
 
@@ -91,6 +92,7 @@ export function createBooks (bookItem) {
     words: filterNum(bookItem.wordCount), // 总字数
     update: getUpdateTime(bookItem.updated), // 最近更新时间
     lastChapter: toNumber(bookItem.lastChapter), // 最新章节
-    chaptersCount: bookItem.chaptersCount // 总章节数
+    chaptersCount: bookItem.chaptersCount, // 总章节数
+    isSerial: bookItem.isSerial ? '连载中' : '已完结'
   })
 }

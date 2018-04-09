@@ -3,7 +3,6 @@ export const currentRank = state => state.currentRank
 
 export const currentBook = state => state.currentBook
 
-export const reading = state => state.reading
 
 export const currentId = state => state.currentId
 

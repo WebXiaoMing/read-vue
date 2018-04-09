@@ -1,5 +1,5 @@
 <template>
-  <div class="book-class-content" v-if="data.length">
+  <div class="book-class-content">
     <h1 class="class-title"><span class="title-solid"></span>{{title}}</h1>
     <div class="class-book-list" ref="slider">
       <ul class="list-wrapper" ref="sliderGroup">
@@ -30,18 +30,12 @@
         default: 2000
       },
     },
-    mounted () {
-      setTimeout(() => {
-        this._setScrollWidth()
-        this._initScroll()
-      }, this.refreshDelay)
-    },
     methods: {
       selectBook (item) {
         this.$emit('selectBook', item)
       },
       _setScrollWidth () {
-        if (!this.data.length) {
+        if (typeof this.$refs.sliderGroup === 'undefined') {
           return
         }
         let children = this.$refs.sliderGroup.children
@@ -62,7 +56,6 @@
           scrollY: false,
           scrollX: true,
           click: true,
-          bounce: false
         })
       },
       refresh () {
@@ -73,8 +66,9 @@
       data () {
         setTimeout(() => {
           this._setScrollWidth()
+          this._initScroll()
           this.refresh()
-        }, 20)
+        }, 80)
       }
     }
   }

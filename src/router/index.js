@@ -10,6 +10,7 @@ const Mine = () => import('components/mine/mine')
 const RankList = () => import('components/rank-list/rank-list')
 const BookDetail = () => import('components/book-detail/book-detail')
 const Category = () => import('components/category/category')
+const BookText = () => import('components/book-text/book-text')
 
 
 export default new Router({
@@ -60,6 +61,11 @@ export default new Router({
       path: '/category/:name',
       meta: { keepAlive: true },
       component: Category
+    },
+    {
+      path: '/booktext/:id',
+      meta: {keepAlive: false},
+      component: BookText
     }
   ]
 })

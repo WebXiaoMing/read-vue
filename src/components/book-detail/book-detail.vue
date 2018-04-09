@@ -1,16 +1,9 @@
 <template>
 <transition name="bookDetail">
-  <div class="book-detail" @click.stop="hideSwitch">
+  <div class="book-detail">
     <div class="top-title">
       <i class="icon-back" @click="back"></i>
       <p class="top-book-name" v-show="showTopTitle">{{topTitle}}</p>
-      <div class="source-wrapper" @click.stop="showSwitch">
-        <span class="text">换源</span>
-        <source-box ref="switch" :data="source"
-                                 :currentIndex="currentIndex"
-                                 @checkSwitch="changeSource"
-        />
-      </div>
       <div class="top-title-layer" v-show="upMove" ref="topTitle"></div>
     </div>
     <div class="bg-layer" ref="bgLayer"></div>
@@ -38,7 +31,7 @@
                 <p class="rating-info">{{bookInfo.ratingScore}}分 ({{bookInfo.ratingCount}}人评)</p>
               </div>
               <p class="category">{{bookInfo.classifi}} | {{bookInfo.minClass}}</p>
-              <p class="words">{{bookInfo.words}}字 | 连载</p>
+              <p class="words">{{bookInfo.words}}字 | {{bookInfo.isSerial}}</p>
             </div>
           </div>
           <div class="book-content" v-show="bookInfo.id">
@@ -86,7 +79,7 @@
   import SourceBox from 'base/source-box/source-box'
 
   import {prefixStyle} from 'common/js/dom'
-  import {getBookInfo, getMixinSource, getChapters} from 'api/handpick'
+  import {getBookInfo, getMixinSource, getChapters, getRecommendBook, getReviewsList} from 'api/handpick'
   import {getSearchList} from 'api/search'
   import {createBooks} from 'common/js/books'
   import {mapGetters, mapMutations, mapActions} from 'vuex'
@@ -101,6 +94,7 @@
         sameAuthor: [],
         sameGenre: [],
         bookInfo: {},
+        reviewsList: [],
         currentIndex: 0,
         source: [],
         bookId: '',
@@ -120,6 +114,7 @@
       setTimeout(() => {
         this._getBookInfo()
         this._getMixinSource()
+        this._getReviewsList()
       }, 20)
     },
     computed: {
@@ -139,6 +134,12 @@
       this.maxHeight = -this.$refs.bookInfo.clientHeight
     },
     methods: {
+      _getReviewsList () {
+        getReviewsList(this.currentBook.id, 20).then(res => {
+          this.reviewsList = res.data.reviews
+          console.log(this.reviewsList)
+        })
+      },
       addToBookShelf () {
         if (this.collected) {
           return
@@ -168,6 +169,9 @@
           index: index
         })
         this.$refs.chapters.hide()
+        this.$router.push({
+          path: `/booktext/${this.bookId}`
+        })
       },
       starReading () {
         this.selectRead({
@@ -175,19 +179,9 @@
           list: this.chapters,
           index: 0
         })
-      },
-      showSwitch () {
-        this.$refs.switch.show()
-      },
-      hideSwitch () {
-        this.$refs.switch.hide()
-      },
-      changeSource (item, index) {
-        if (this.currentIndex === index) {
-          return
-        }
-        this.currentIndex = index
-        this.bookId = item._id
+        this.$router.push({
+          path: `/booktext/${this.bookId}`
+        })
       },
       showChapters () {
         this.$refs.chapters.show()
@@ -240,9 +234,8 @@
           this.sameAuthor = list.map(item => createBooks(item))
         })
 
-        getSearchList(this.currentBook.classifi).then(res => {
-          let list = res.data.books.filter(item => item.cat === this.currentBook.classifi)
-          this.sameGenre = list.map(item => createBooks(item)).slice(0, 8)
+        getRecommendBook(this.currentBook.id).then(res => {
+          this.sameGenre = res.data.books.map(item => createBooks(item)).slice(0, 10)
         })
       },
       ...mapMutations({
@@ -315,7 +308,7 @@
 
   .book-detail
     position fixed
-    z-index 998
+    z-index 10
     top 0
     left 0
     right 0

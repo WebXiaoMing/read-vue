@@ -1,19 +1,12 @@
 <template>
 <transition name="book-text">
   <div>
-    <div class="book-text-wrapper" v-show="reading" ref="wrapper">
-      <div class="back-group" :class="show">
-        <div class="back-content" @click.stop="back">
-          <i class="icon-arrow"></i>
-          <span>返回</span>
-        </div>
-      </div>
+    <div class="book-text-wrapper" ref="wrapper">
       <h1 class="title">{{title}}</h1>
       <scroll :data="chapterList" class="group" ref="scroll"
               :pullup="pullup"
               @scrollToEnd="scrollToEnd"
               :listenScroll="listenScroll"
-              @scroll="scroll"
               :probeType="probeType"
               >
         <div class="text-content" ref="textGroup" @click="showSettingBtn">
@@ -34,6 +27,8 @@
                   :isNight="isNight"
                   @openChapters="openChapters"
                   @changeMode="changeMode"
+                  @back="back"
+                  ref="settingBtn"
       />
       <book-chapters :title="currentBook.title"
                     :author="currentBook.author"
@@ -63,7 +58,6 @@
     data () {
       return {
         pullup: true,
-        currentBookChap: [],
         chapterList: [],
         index: 0,
         title: '',
@@ -81,7 +75,6 @@
         return this.setting ? 'show' : ''
       },
       ...mapGetters([
-        'reading',
         'chapters',
         'currentChapter',
         'currentBook',
@@ -89,27 +82,34 @@
         'currentId'
       ])
     },
-    mounted () {
-      this.currentBookChap = this.chapters
+    created () {
+      setTimeout(() => {
+        this.index = this.currentChapter
+        this._getChapterText(this.currentChapter)
+        this._filterStorage()
+      }, 600)
     },
     methods: {
       back () {
         if (this.collected) {
           this._saveStorage()
+          this.setting = false
           this._reset()
+          this.$router.back()
         } else {
           this.$refs.confirmBox.show()
         }
       },
       _reset () {
-        this.setting = false
-        this.title = ''
         this.chapterList = []
+        this.title = []
         this.index = 0
-        this.refreshRead()
-        this.$router.back()
+        this.setting = false
       },
       _saveStorage () {
+        if (!this.collectList.length) {
+          return
+        }
         let list = this.collectList.slice()
         let book = null
 
@@ -133,16 +133,19 @@
         this.saveStorageList(saveObj)
         this.saveLastReading(saveObj)
         this._reset()
+        this.$router.back()
       },
       selectCancel () {
         this._reset()
+        this.$router.back()
       },
-      filterStorage () {
+      _filterStorage () {
         if (!this.collectList.length || !this.currentBook.id) {
           this.collected = false
           return
         }
         this.collected = this.collectList.some(item => item.bookInfo.id === this.currentBook.id)
+        console.log(this.collected)
       },
       openChapters () {
         this.$refs.chapters.show()
@@ -157,6 +160,7 @@
         this.chapterList = []
         this.selectRead({
           list: this.chapters,
+          id: this.currentId,
           index: index
         })
         this.$refs.chapters.hide()
@@ -174,9 +178,6 @@
           console.log('无法请求')
         })
       },
-      scroll () {
-        this.groupHeight = this.$refs.textGroup.clientHeight
-      },
       scrollToEnd () {
         if (typeof this.chapters === 'undefined' || this.currentChapter >= this.chapters.length - 1) {
           return
@@ -187,7 +188,6 @@
         }
         // 加载下一章数据
         this.loading = true
-        this.offsetHeight = this.$refs.textGroup.clientHeight
         this._getChapterText(this.index)
       },
       ...mapMutations({
@@ -202,22 +202,9 @@
       ])
     },
     watch: {
-      chapters (newI, oldI) {
-        if (!this.chapters || !this.chapters.length) {
-          return
-        }
-        if (newI && newI !== oldI) {
-          this.index = this.currentChapter
-          this._getChapterText(this.index)
-        }
-      },
-      currentBook () {
-        this.filterStorage()
-      },
-      currentChapter (newC, oldC) {
-        if (!newC || newC === oldC) {
-          return
-        }
+      currentChapter () {
+        console.log(this.currentChapter)
+        this.index = this.currentChapter
         this._getChapterText(this.currentChapter)
       },
       chapterList (newL, oldL) {
@@ -225,8 +212,12 @@
           return
         }
         // 当 chapterList 发生改变,将正在加载设置为 false
-        this.loading = false
         this.index ++
+        let timer
+        clearTimeout(timer)
+        timer = setTimeout(() => {
+          this.loading = false
+        }, 500)
       },
       isNight () {
         if (this.isNight) {
@@ -252,24 +243,23 @@
 
   .book-text-wrapper
     position fixed
-    top 0
     left 0
     right 0
+    top 0
     bottom 0
-    z-index 998
+    z-index 150
     background #c6ebc9
-    padding 32px 16px 0 16px
     color $font-color-dd
     .title
       font-size 14px
       color $font-color
       line-height 32px
-      position absolute
-      top 0
-      left 16px
+      margin-left 1rem
+      background #c6ebc9
     .group
       width 100%
       height 100%
+      padding 0 1rem 0 1rem
       box-sizing border-box
       overflow hidden
       .text-content
@@ -312,40 +302,16 @@
       right 0
       bottom 0
       width 100%
-      height 100%
-    .back-group
-      position fixed
-      top 0
-      left 0
-      z-index 998
-      width 100%
-      height 2.75rem
-      background rgba(0,0,0, 0.85)
-      font-size 0.875rem
-      line-height 2.75rem
-      color #fff
-      transform translate3d(0, -100%, 0)
-      transition all 0.3s
-      &.show
-        transform translate3d(0, 0, 0)
-        transition all 0.2s
-      .back-content
-        padding-left 1rem
-        width 3.75rem
-        .icon-arrow
-          display inline-block
-          transform rotate(180deg)
-          margin-right 0.25rem
+      height 100vh
     .chapters-group
       position fixed
       top 0
       left 0
       right 0
       bottom 0
-      z-index 999
 
   .book-text-enter-active, .book-text-leave-active
-    transition all 0.3s
+    transition all 0.4s
   .book-text-enter, .book-text-leave-to
     transform translate3d(100%, 0, 0)
     opacity 0
