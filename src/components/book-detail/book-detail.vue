@@ -67,6 +67,9 @@
                       @select="select"
       />
     </div>
+    <div class="book-review-wrapper">
+      <reviews-list></reviews-list>
+    </div>
     <p class="add-text" :class="{'active': showAdd}">加入书架成功</p>
   </div>
 </transition>
@@ -77,11 +80,13 @@
   import Loading from 'base/loading/loading'
   import BookChapters from 'base/book-chapters/book-chapters'
   import SourceBox from 'base/source-box/source-box'
+  import ReviewsList from 'base/reviews-list/reviews-list'
 
   import {prefixStyle} from 'common/js/dom'
   import {getBookInfo, getMixinSource, getChapters, getRecommendBook, getReviewsList} from 'api/handpick'
   import {getSearchList} from 'api/search'
   import {createBooks} from 'common/js/books'
+  import {createReviews} from 'common/js/reviews'
   import {mapGetters, mapMutations, mapActions} from 'vuex'
   import {getStarScore} from 'common/js/util'
 
@@ -135,8 +140,8 @@
     },
     methods: {
       _getReviewsList () {
-        getReviewsList(this.currentBook.id, 20).then(res => {
-          this.reviewsList = res.data.reviews
+        getReviewsList(this.currentBook.id, 100).then(res => {
+          this.reviewsList = res.data.reviews.map(item => createReviews(item))
           console.log(this.reviewsList)
         })
       },
@@ -297,7 +302,8 @@
       Scroll,
       Loading,
       BookChapters,
-      SourceBox
+      SourceBox,
+      ReviewsList
     }
   }
 

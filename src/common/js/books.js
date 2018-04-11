@@ -1,4 +1,5 @@
 import {getSearchList} from 'api/search'
+import {getUpdateTime} from 'common/js/dom'
 
 export default class Book {
   constructor ({id, title, author, shortInfo, longInfo, star, classifi, minClass, image, ratingCount, ratingScore, words, update, lastChapter, isSerial, chaptersCount}) {
@@ -32,39 +33,7 @@ function filterNum (str) {
   return str
 }
 
-function getUpdateTime (date) {
-  const currentTime = new Date(),
-			 	updateTime = new Date(date),
-			 	fullYear = currentTime.getFullYear() - updateTime.getFullYear(),
-			 	month = currentTime.getMonth() - updateTime.getMonth(),
-			 	day = currentTime.getDate() - updateTime.getDate(),
-		    hover = currentTime.getHours() - updateTime.getHours(),
-		    minutes = currentTime.getMinutes() - updateTime.getMinutes()
 
-	let ret = ''
-
-  switch (true) {
-    case !!fullYear:
-      ret = fullYear + '年前'
-      break
-    case !!month:
-      ret = month + '个月前'
-      break
-    case !!day:
-      ret = day + '天前'
-      break
-    case !!hover:
-      ret = hover + '个小时前'
-      break
-    case !!minutes:
-      ret = minutes + '分钟前'
-      break
-    default:
-      ret = '刚才'
-  }
-
-	return ret
-}
 
 function toNumber (str) {
   if (!str) {

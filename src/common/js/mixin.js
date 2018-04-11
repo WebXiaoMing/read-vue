@@ -14,17 +14,17 @@ export const setPullDownRefresh = {
   methods: {
     onPullingDown (requestFunc) {
       clearTimeout(this.timer)
-      if (this.pullingDown) {
-        this.timer = setTimeout(() => {
-          this.$refs.scroll.finishPullDown()
-        }, 500)
-        return
-      }
       this.pullingDown = true
-      requestFunc()
-      this.timer = setTimeout(() => {
-        this.$refs.scroll.finishPullDown()
-      }, 500)
+      setTimeout(() => {
+        requestFunc()
+        if (!this.pullingDown) {
+          console.log('hello')
+          this.$refs.scroll.finishPullDown()
+        } else {
+          this.pullingDown = false
+          this.$refs.scroll.finishPullDown()
+        }
+      }, 1000)
     }
   },
   watch: {

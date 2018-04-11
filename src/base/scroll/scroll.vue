@@ -117,6 +117,12 @@
       finishPullDown () {
         this.scroll && this.scroll.finishPullDown()
       },
+      closePullDown () {
+        this.scroll && this.scroll.closePullDown()
+      },
+      openPullDown () {
+        this.scroll && this.scroll.openPullDown.apply(this.scroll, arguments)
+      },
       scrollTo () {
         this.scroll && this.scroll.scrollTo.apply(this.scroll, arguments)
       },
