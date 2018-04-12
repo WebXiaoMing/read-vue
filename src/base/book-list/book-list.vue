@@ -1,6 +1,9 @@
 <template>
   <scroll class="book-content"  :data="bookList"
                                 :pulldown="pulldown"
+                                :pullup="pullup"
+                                :probeType="probeType"
+                                @scrollToEnd="scrollToEnd"
                                 @onPullingDown="onPullingDown"
                                 :pullDownRefresh="pullDownRefresh"
                                 ref="scroll"
@@ -51,6 +54,14 @@
       pullDownRefresh: {
         type: Object,
         default: null
+      },
+      pullup: {
+        type: Boolean,
+        default: false
+      },
+      probeType: {
+        type: Number,
+        default: 1
       }
     },
     methods: {
@@ -62,6 +73,9 @@
       },
       selectBook (item) {
         this.$emit('selectBook', item)
+      },
+      scrollToEnd () {
+        this.$emit('scrollToEnd')
       }
     },
     components: {

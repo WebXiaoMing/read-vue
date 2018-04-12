@@ -14,6 +14,7 @@
                               :class="{'active': index === currentIndex}"
                               @click="changeColor(item, index)"
             >
+              <i class="icon-tick" v-show="index === currentIndex"></i>
             </span>
           </div>
         </div>
@@ -172,11 +173,11 @@
         box-sizing border-box
         background #ccc
         &.active
-          color red
-          border 1px solid red
-          &:after
-            content '√'
-            font-size 16px
+          color #ff4444
+          border 1px solid #ff4444
+          &.icon-tick
+            font-size $font-size-medium
+            color #ff4444
       .font-btn
         display inline-block
         width 9rem

@@ -63,5 +63,5 @@ export function setReadStyle (obj) {
 }
 
 export const loadReadStyle = function () {
-  return storage.get(READ_STYLE_KEY, {color: '#f6f6f6', fontSize: 14})
+  return storage.get(READ_STYLE_KEY, {color: '#f6f6f6', fontSize: 14, currentIndex: 0})
 }

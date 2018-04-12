@@ -91,6 +91,7 @@
     created () {
       setTimeout(() => {
         this.index = this.currentChapter
+        this.currentIndex = this.readStyle.index
         this._getChapterText(this.currentChapter)
         this._filterStorage()
       }, 600)
@@ -105,6 +106,7 @@
         this.currentIndex = index
         this.saveReadStyle({
           color: item,
+          index,
           fontSize: this.readStyle.fontSize
         })
       },
@@ -120,7 +122,6 @@
         })
       },
       addFontSize () {
-        console.log('hello')
         let index = this.readStyle.fontSize
         if (index >= 28) {
           return
@@ -191,7 +192,6 @@
           return
         }
         this.collected = this.collectList.some(item => item.bookInfo.id === this.currentBook.id)
-        console.log(this.collected)
       },
       openChapters () {
         this.$refs.chapters.show()

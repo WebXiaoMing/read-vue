@@ -24,7 +24,15 @@
       </div>
     </div>
     <div class="book-list-wrapper" v-show="bookList.length">
-      <book-list :bookList="bookList"></book-list>
+      <book-list :bookList="bookList"
+                  @selectBook="selectBook"
+                  :pullup="pullup"
+                  :probeType="probeType"
+                  @scrollToEnd="scrollToEnd"
+      />
+      <div class="uploading" v-show="loading">
+        <upload></upload>
+      </div>
     </div>
   </div>
 </transition>
@@ -32,8 +40,12 @@
 <script type="text/ecmascript-6">
   import {getCategory, getBookList} from 'api/classify'
   import {createBooks} from 'common/js/books'
+  import {mapMutations} from 'vuex'
 
   import BookList from 'base/book-list/book-list'
+  import Upload from 'base/upload/upload'
+
+  const maxLen = 200
 
   export default {
     props: {
@@ -56,7 +68,10 @@
         typeIndex: 0,
         minorIndex: 0,
         start: 0,
-        limit: 20
+        limit: 20,
+        pullup: true,
+        probeType: 3,
+        loading: false
       }
     },
     created () {
@@ -66,6 +81,23 @@
       }, 60)
     },
     methods: {
+      scrollToEnd () {
+        if (this.start > maxLen) {
+          return
+        }
+        if (this.loading) {
+          return
+        }
+        this.loading = true
+        let category = this.category[this.minorIndex] === '全部' ? '' : this.category[this.minorIndex]
+        this._getBookList(this.gender, this.type[this.typeIndex], this.name, category,this.start, this.limit)
+      },
+      selectBook (item) {
+        this.setCurrentBook(item)
+        this.$router.push({
+          path: `/book/${item.id}`
+        })
+      },
       typeText (item) {
         return item === 'hot' ? '热门' : item === 'new' ?
         '新书' : item === 'reputation' ? '好评' : item === 'over' ?
@@ -85,15 +117,35 @@
             this.bookList = []
             return
           }
-          this.bookList = res.data.books.map(item => createBooks(item))
+          let data = res.data.books.map(item => createBooks(item))
+          data.forEach(item => {
+            this.bookList.push(item)
+          })
         })
       },
       back () {
         this.$router.back()
-      }
+      },
+      ...mapMutations({
+        setCurrentBook: 'SET_CURRENT_BOOK'
+      })
     },
     watch: {
+      bookList (newL, oldL) {
+        if (!newL.length) {
+          return
+        }
+
+        this.start = this.start + this.limit
+        let timer
+        clearTimeout(timer)
+        timer = setTimeout(() => {
+          this.loading = false
+        }, 2000)
+      },
       typeIndex (newI, oldI) {
+        this.start = 0
+        this.bookList = []
         if (newI === oldI) {
           return
         }
@@ -101,6 +153,8 @@
         this._getBookList(this.gender, this.type[newI], this.name, category, this.start, this.limit)
       },
       minorIndex (newM, oldM) {
+        this.start = 0
+        this.bookList = []
         if (newM === oldM) {
           return
         }
@@ -109,7 +163,8 @@
       },
     },
     components: {
-      BookList
+      BookList,
+      Upload
     }
   }
 </script>
@@ -152,7 +207,6 @@
       color $font-color-d
       padding 1rem
       background $background-color
-      margin-bottom 0.5rem
       .min-classify-content
         padding-top 0.5rem
         border-top 1px solid $border-color-m
@@ -176,10 +230,16 @@
             color $theme-color
     .book-list-wrapper
       position fixed
-      top 8.75rem
+      top 9.125rem
       left 0
       right 0
       bottom 0
+      .uploading
+        position absolute
+        z-index -998
+        bottom 0
+        width 100%
+        height 40px
 
   .category-enter-active, .category-leave-active
     transition all 0.3s
