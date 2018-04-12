@@ -11,7 +11,7 @@
               >
         <div class="text-content" ref="textGroup" @click="showSettingBtn">
           <div class="text-item" v-for="item in chapterList" ref="textWrapper">
-            <h1 class="text-title" :class="{'isNight': isNight}">{{item.title}}</h1>
+            <h1 class="text-title" :class="{'isNight': isNight}" ref="textTitle">{{item.title}}</h1>
             <p class="text" v-for="text in item.textContent">{{text}}。</p>
           </div>
         </div>
@@ -25,8 +25,12 @@
       </div>
       <setting-btn :showFlag="setting"
                   :isNight="isNight"
+                  :currentIndex="currentIndex"
                   @openChapters="openChapters"
                   @changeMode="changeMode"
+                  @changeColor="changeColor"
+                  @minusFontSize="minusFontSize"
+                  @addFontSize="addFontSize"
                   @back="back"
                   ref="settingBtn"
       />
@@ -67,7 +71,8 @@
         groupHeight: 0,
         loading: false,
         isNight: false,
-        bgColor: '#c6ebc9'
+        bgColor: '#c6ebc9',
+        currentIndex: 0
       }
     },
     computed: {
@@ -79,7 +84,8 @@
         'currentChapter',
         'currentBook',
         'collectList',
-        'currentId'
+        'currentId',
+        'readStyle'
       ])
     },
     created () {
@@ -89,7 +95,42 @@
         this._filterStorage()
       }, 600)
     },
+    mounted () {
+      setTimeout(() => {
+        this._initStyle()
+      }, 60)
+    },
     methods: {
+      changeColor (item, index) {
+        this.currentIndex = index
+        this.saveReadStyle({
+          color: item,
+          fontSize: this.readStyle.fontSize
+        })
+      },
+      minusFontSize () {
+        let index = this.readStyle.fontSize
+        if (index <= 14) {
+          return
+        }
+        index --
+        this.saveReadStyle({
+          color: this.readStyle.color,
+          fontSize: index
+        })
+      },
+      addFontSize () {
+        console.log('hello')
+        let index = this.readStyle.fontSize
+        if (index >= 28) {
+          return
+        }
+        index ++
+        this.saveReadStyle({
+          color: this.readStyle.color,
+          fontSize: index
+        })
+      },
       back () {
         if (this.collected) {
           this._saveStorage()
@@ -99,6 +140,11 @@
         } else {
           this.$refs.confirmBox.show()
         }
+      },
+      _initStyle () {
+        this.$refs.wrapper.style.background = this.readStyle.color
+        this.$refs.wrapper.style.fontSize = this.readStyle.fontSize + 'px'
+        this.$refs.wrapper.style.lineHeight = this.readStyle.fontSize * 2 - 4 + 'px'
       },
       _reset () {
         this.chapterList = []
@@ -198,10 +244,16 @@
         'selectRead',
         'refreshRead',
         'saveStorageList',
-        'saveLastReading'
+        'saveLastReading',
+        'saveReadStyle'
       ])
     },
     watch: {
+      readStyle (newStyle, oldStyle) {
+        if (newStyle && newStyle !== oldStyle) {
+          this._initStyle()
+        }
+      },
       currentChapter () {
         console.log(this.currentChapter)
         this.index = this.currentChapter
@@ -224,7 +276,8 @@
           this.$refs.wrapper.style.background = '#1b1b1b'
           this.$refs.wrapper.style.color = '#6e6e6e'
         } else {
-          this.$refs.wrapper.style.background = this.bgColor
+          this.$refs.wrapper.style.background = this.readStyle.color
+          console.log(this.readStyle)
           this.$refs.wrapper.style.color = '#101010'
         }
       }
@@ -255,7 +308,6 @@
       color $font-color
       line-height 32px
       margin-left 1rem
-      background #c6ebc9
     .group
       width 100%
       height 100%
@@ -276,9 +328,7 @@
               color #6e6e6e
           .text
             margin-top 8px
-            font-size 19px
             width 100%
-            line-height 32px
             text-indent 32px
     .more
       position fixed

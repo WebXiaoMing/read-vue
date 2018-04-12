@@ -12,7 +12,7 @@
               <span class="name">男生频道</span>
             </div>
             <div class="classify-list">
-              <div class="classify-item" v-for="(item, index) in male" :class="dark(index)" @click="selectItem(item)">
+              <div class="classify-item" v-for="(item, index) in male" :class="dark(index)" @click="selectMaleItem(item)">
                 <img class="item-image" :src="image + item.bookCover[0]" />
                 <div class="item-content">
                   <h1 class="classify-text">{{item.name}}</h1>
@@ -27,7 +27,7 @@
               <span class="name">女生频道</span>
             </div>
             <div class="classify-list">
-              <div class="classify-item" v-for="(item, index) in female" :class="dark(index)">
+              <div class="classify-item" v-for="(item, index) in female" :class="dark(index)"  @click="selectFemaleItem(item)">
                 <img class="item-image" :src="image + item.bookCover[0]" />
                 <div class="item-content">
                   <h1 class="classify-text">{{item.name}}</h1>
@@ -62,9 +62,14 @@
       this._getClassify()
     },
     methods: {
-      selectItem (item) {
+      selectMaleItem (item) {
         this.$router.push({
-          path: `/category/${item.name}`
+          path: `/category/male/${item.name}`,
+        })
+      },
+      selectFemaleItem (item) {
+        this.$router.push({
+          path: `/category/female/${item.name}`,
         })
       },
       dark (index) {

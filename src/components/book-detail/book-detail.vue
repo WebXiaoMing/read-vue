@@ -8,7 +8,7 @@
     </div>
     <div class="bg-layer" ref="bgLayer"></div>
     <div class="book-detail-content" ref="detailContent">
-      <scroll class="content" :data="sameAuthor.concat(sameGenre)"
+      <scroll class="content" :data="[...sameAuthor, ...sameGenre, ...reviewsList]"
                               :probe-type="probeType"
                               :listen-scroll="listenScroll"
                               @scroll="scroll"
@@ -42,6 +42,17 @@
               <span class="catalog-info">连载至 {{bookInfo.chaptersCount}} 章 更新于{{bookInfo.update}}<i class="icon-arrow"></i></span>
             </div>
           </div>
+          <div class="book-reviews">
+            <div class="book-reviews-title">
+              <h1 class="title">书评</h1>
+            </div>
+            <div class="book-reviews-content">
+              <reviews :data="reviewsList.slice(0, 3)"></reviews>
+            </div>
+            <div class="book-reviews-more" @click="showReviewsList">
+              <h1 class="title">查看更多</h1>
+            </div>
+          </div>
           <div class="book-class-wrapper">
             <book-class title="作者其他作品" @selectBook="selectBook" :data="sameAuthor"></book-class>
           </div>
@@ -68,7 +79,7 @@
       />
     </div>
     <div class="book-review-wrapper">
-      <reviews-list></reviews-list>
+      <reviews-list :data="reviewsList" ref="reviews"></reviews-list>
     </div>
     <p class="add-text" :class="{'active': showAdd}">加入书架成功</p>
   </div>
@@ -81,6 +92,7 @@
   import BookChapters from 'base/book-chapters/book-chapters'
   import SourceBox from 'base/source-box/source-box'
   import ReviewsList from 'base/reviews-list/reviews-list'
+  import Reviews from 'base/reviews/reviews'
 
   import {prefixStyle} from 'common/js/dom'
   import {getBookInfo, getMixinSource, getChapters, getRecommendBook, getReviewsList} from 'api/handpick'
@@ -139,10 +151,12 @@
       this.maxHeight = -this.$refs.bookInfo.clientHeight
     },
     methods: {
+      showReviewsList () {
+        this.$refs.reviews.show()
+      },
       _getReviewsList () {
         getReviewsList(this.currentBook.id, 100).then(res => {
           this.reviewsList = res.data.reviews.map(item => createReviews(item))
-          console.log(this.reviewsList)
         })
       },
       addToBookShelf () {
@@ -303,7 +317,8 @@
       Loading,
       BookChapters,
       SourceBox,
-      ReviewsList
+      ReviewsList,
+      Reviews
     }
   }
 
@@ -492,6 +507,24 @@
               right 0
               .icon-arrow
                 margin-left 0.625rem
+        .book-reviews
+          background $font-color-ll
+          margin-bottom 0.875rem
+          .book-reviews-title
+            padding 0 1rem
+            color $font-color-dd
+            .title
+              line-height 2.5rem
+              border-bottom 1px solid $border-color
+          .book-reviews-more
+            padding 0 1rem
+            color $theme-color
+            .title
+              width 100%
+              font-size $font-size-medium
+              line-height 2.5rem
+              border-top 1px solid $border-color
+              text-align center
         .book-class-wrapper
           margin-bottom $margin-bottom
     .loadding-wrapper

@@ -13,3 +13,5 @@ export const currentChapter = state => state.currentChapter
 export const collectList = state => state.collectList
 
 export const lastReading = state => state.lastReading
+
+export const readStyle = state => state.readStyle

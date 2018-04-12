@@ -22,6 +22,9 @@ const mutations = {
   [types.SET_CURRENT_ID] (state, str) {
     state.currentId = str
   },
+  [types.SET_READ_STYLE] (state, obj) {
+    state.readStyle = obj
+  },
 }
 
 export default mutations

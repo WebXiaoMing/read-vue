@@ -7,6 +7,25 @@
           <span>返回</span>
         </div>
       </div>
+      <div class="setting-wrapper" v-show="showFlag && setting">
+        <div class="setting-color">
+          <div class="color-item" v-for="(item, index) in color">
+            <span class="item" :style="{'background': item}"
+                              :class="{'active': index === currentIndex}"
+                              @click="changeColor(item, index)"
+            >
+            </span>
+          </div>
+        </div>
+        <div class="setting-font">
+          <div class="font-item" @click="minusFontSize">
+            <span class="font-btn">A-</span>
+          </div>
+          <div class="font-item" @click="addFontSize">
+            <span class="font-btn">A+</span>
+          </div>
+        </div>
+      </div>
       <div class="setting-btn">
         <div class="setting-item">
           <div class="icon-wrapper" @click="openChapters">
@@ -36,6 +55,16 @@
       isNight: {
         type: Boolean,
         default: false
+      },
+      currentIndex: {
+        type: Number,
+        default: 0
+      }
+    },
+    data () {
+      return {
+        setting: false,
+        color: ['#f6f6f6', '#e1d4b2', '#bed8ab', '#efc1c1', '#dcc49e', '#d9e8ff']
       }
     },
     computed: {
@@ -57,7 +86,24 @@
         this.$emit('changeMode')
       },
       openSetting () {
+        this.setting = !this.setting
         this.$emit('openSetting')
+      },
+      changeColor (item, index) {
+        this.$emit('changeColor', item, index)
+      },
+      minusFontSize () {
+        this.$emit('minusFontSize')
+      },
+      addFontSize () {
+        this.$emit('addFontSize')
+      }
+    },
+    watch: {
+      showFlag (newS) {
+        if (newS === false) {
+          this.setting = false
+        }
       }
     }
   }
@@ -80,9 +126,11 @@
       flex-direction column
       justify-content center
       font-size $font-size-medium
+      .icon-wrapper
+        font-size 0.875rem
       .title
         font-size $font-size-small-s
-        margin-top 0.375rem
+        line-height 22px
   .back-group
       position fixed
       top 0
@@ -101,6 +149,48 @@
           display inline-block
           transform rotate(180deg)
           margin-right 0.25rem
+  .setting-wrapper
+    position fixed
+    left 0
+    right 0
+    bottom 3.125rem
+    background rgba(0,0,0, 0.85)
+    .setting-color, .setting-font
+      padding 0.875rem
+      box-sizing border-box
+      border-bottom 1px solid $border-color-dd
+      width 100%
+      display flex
+      justify-content space-between
+      .item
+        display inline-block
+        width 2rem
+        height 2rem
+        text-align center
+        line-height 2rem
+        border-radius 50%
+        box-sizing border-box
+        background #ccc
+        &.active
+          color red
+          border 1px solid red
+          &:after
+            content '√'
+            font-size 16px
+      .font-btn
+        display inline-block
+        width 9rem
+        height 2.4rem
+        text-align center
+        line-height 2.4rem
+        border 1px solid $border-color-d
+        border-radius 1.2rem
+        color $font-color-l
+        font-size $font-size-large-x
+        box-sizing border-box
+
+
+
   .setting-enter-active, .setting-leave-active
     transition all 0.4s
     .back-group, .setting-btn

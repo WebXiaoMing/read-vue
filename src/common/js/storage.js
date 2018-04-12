@@ -4,6 +4,8 @@ const BOOK_KEY = '__book__'
 
 const READING_KEY = '__reading__'
 
+const READ_STYLE_KEY = '__style__'
+
 function insertArray(arr, obj, compare) {
   const index = arr.findIndex(compare)
   if (index === 0) {
@@ -53,4 +55,13 @@ export const saveReading = function (obj) {
 // 从本地读取最近阅读的书籍
 export const loadReading = function () {
   return storage.get(READING_KEY, {})
+}
+
+export function setReadStyle (obj) {
+  storage.set(READ_STYLE_KEY, obj)
+  return obj
+}
+
+export const loadReadStyle = function () {
+  return storage.get(READ_STYLE_KEY, {color: '#f6f6f6', fontSize: 14})
 }

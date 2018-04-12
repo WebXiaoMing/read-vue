@@ -58,9 +58,10 @@ export default new Router({
       meta: { keepAlive: false }
     },
     {
-      path: '/category/:name',
-      meta: { keepAlive: true },
-      component: Category
+      path: '/category/:gender/:name',
+      meta: { keepAlive: false },
+      component: Category,
+      props: true
     },
     {
       path: '/booktext/:id',

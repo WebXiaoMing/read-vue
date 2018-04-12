@@ -17,3 +17,5 @@ export const SET_COLLECT_LIST = 'SET_COLLECT_LIST'
 
 //设置最近阅读的书籍
 export const SET_LAST_READING = 'SET_LAST_READING'
+
+export const SET_READ_STYLE = 'SET_READ_STYLE'
