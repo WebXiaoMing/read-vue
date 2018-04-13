@@ -25,6 +25,9 @@ const mutations = {
   [types.SET_READ_STYLE] (state, obj) {
     state.readStyle = obj
   },
+  [types.SET_SEARCH_HISTORY] (state, list) {
+    state.searchHistory = list
+  },
 }
 
 export default mutations

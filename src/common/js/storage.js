@@ -6,6 +6,8 @@ const READING_KEY = '__reading__'
 
 const READ_STYLE_KEY = '__style__'
 
+const SEARCH_HISTORY_KEY = '__search__'
+
 function insertArray(arr, obj, compare) {
   const index = arr.findIndex(compare)
   if (index === 0) {
@@ -64,4 +66,21 @@ export function setReadStyle (obj) {
 
 export const loadReadStyle = function () {
   return storage.get(READ_STYLE_KEY, {color: '#f6f6f6', fontSize: 14, currentIndex: 0})
+}
+
+export const setSearchHistory = function (query) {
+  let storages = storage.get(SEARCH_HISTORY_KEY, [])
+  insertArray(storages, query, (item) => {
+    return item === query
+  })
+  if (storages.length > 10) {
+    storages.pop()
+  }
+  storage.set(SEARCH_HISTORY_KEY, storages)
+
+  return storages
+}
+
+export const loadSearchHistory = function () {
+  return storage.get(SEARCH_HISTORY_KEY, [])
 }

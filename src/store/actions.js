@@ -1,5 +1,5 @@
 import * as types from './mutation-types'
-import {saveStorage, saveReading, deleteStorage, setReadStyle} from 'common/js/storage'
+import {saveStorage, saveReading, deleteStorage, setReadStyle, setSearchHistory} from 'common/js/storage'
 
 export const selectRead = function ({commit, state}, {list, id, index}) {
   commit(types.SET_CURRENT_ID, id)
@@ -21,4 +21,8 @@ export const saveLastReading = function ({commit, state}, item) {
 
 export const saveReadStyle = function ({commit, state}, obj) {
   commit(types.SET_READ_STYLE, setReadStyle(obj))
+}
+
+export const saveSearchHistory = function ({commit, state}, query) {
+  commit(types.SET_SEARCH_HISTORY, setSearchHistory(query))
 }

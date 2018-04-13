@@ -1,4 +1,4 @@
-import {loadStorage, loadReading, loadReadStyle} from 'common/js/storage'
+import {loadStorage, loadReading, loadReadStyle, loadSearchHistory} from 'common/js/storage'
 
 const state = {
   currentRank: {}, // 当前的rank榜
@@ -8,7 +8,8 @@ const state = {
   currentChapter: 0, // 当前阅读的章节
   collectList: loadStorage(), // 收藏的书籍列表
   lastReading: loadReading(), // 最后一次阅读的书籍
-  readStyle: loadReadStyle()
+  readStyle: loadReadStyle(),
+  searchHistory: loadSearchHistory()
 }
 
 export default state

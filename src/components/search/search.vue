@@ -4,13 +4,29 @@
       <search-box ref="searchBox" @query="onQueryChange"></search-box>
     </div>
     <div class="hot-search-wrapper" v-show="!query">
-      <div class="hot-title">
-        <span class="line-icon"></span>
-        <h1 class="title-text">热门搜索</h1>
-        <p class="change" @click="changeWords">换一换</p>
+      <div class="hot-content">
+        <div class="hot-title">
+          <span class="line-icon"></span>
+          <h1 class="title-text">热门搜索</h1>
+          <p class="change" @click="changeWords">换一换</p>
+        </div>
+        <div class="hot-list">
+          <span class="hot-item" v-for="item in hots" @click="setQuery(item.word)">{{item.word}}</span>
+        </div>
       </div>
-      <div class="hot-list">
-        <span class="hot-item" v-for="item in hots" @click="setQuery(item.word)">{{item.word}}</span>
+      <div class="search-history-wrapper" v-show="searchHistory.length">
+        <div class="history-title">
+          <span class="line-icon"></span>
+          <h1 class="title-text">搜索历史</h1>
+          <p class="change"><i class="icon-trash" @click="changeWords"></i></p>
+        </div>
+        <ul class="history-list">
+          <li class="history-item" v-for="query in searchHistory">
+            <p class="search-icon"><i class="icon-search"></i></p>
+            <p class="history-text">{{query}}</p>
+            <p class="delete-icon"><i class="icon-clear"></i></p>
+          </li>
+        </ul>
       </div>
     </div>
     <div class="result-wrapper" v-show="query">
@@ -20,7 +36,7 @@
 </template>
 <script type="text/ecmascript-6">
   import {getSearchHot} from 'api/search'
-  import {mapMutations} from 'vuex'
+  import {mapMutations, mapActions, mapGetters} from 'vuex'
 
   import SearchBox from 'base/search-box/search-box'
   import ResultList from 'base/result-list/result-list'
@@ -37,7 +53,10 @@
     computed: {
       hots () {
         return this.hotWords.slice(this.hotstar, this.hotend)
-      }
+      },
+      ...mapGetters([
+        'searchHistory'
+      ])
     },
     created () {
       this._getSearchHot()
@@ -48,6 +67,7 @@
         this.$router.push({
           path: `/book/${item.id}`
         })
+        this.saveSearchHistory(this.query)
         this.$refs.searchBox.clear()
       },
       onQueryChange (query) {
@@ -73,7 +93,10 @@
       },
       ...mapMutations({
         setCurrentBook: 'SET_CURRENT_BOOK'
-      })
+      }),
+      ...mapActions([
+        'saveSearchHistory'
+      ])
     },
     components: {
       SearchBox,
@@ -96,24 +119,27 @@
     width 100%
     box-sizing border-box
     padding 0 1rem
-    .hot-title
-      height 2.5rem
-      line-height 2.5rem
-      display flex
-      width 100%
-      border-bottom 1px solid $border-color
-      color $font-color-dd
-      .line-icon
-        display inline-block
-        width 3px
-        height 1.125rem
-        margin auto 0
-        margin-right 0.5rem
-        background $theme-color
-      .title-text
-        flex 1
-      .change
-        font-size $font-size-medium
+    .hot-content
+      margin-bottom 2rem
+    .hot-content, .search-history-wrapper  
+      .hot-title, .history-title
+        height 2.5rem
+        line-height 2.5rem
+        display flex
+        width 100%
+        border-bottom 1px solid $border-color
+        color $font-color-dd
+        .line-icon
+          display inline-block
+          width 3px
+          height 1.125rem
+          margin auto 0
+          margin-right 0.5rem
+          background $theme-color
+        .title-text
+          flex 1
+        .change
+          font-size $font-size-medium
     .hot-list
       .hot-item
         display inline-block
@@ -125,6 +151,19 @@
         color $font-color-d
         border 1px solid $border-color-m
         border-radius 0.75rem
+    .history-list
+      .history-item
+        height 2.5rem
+        line-height 2.5rem
+        display flex
+        width 100%
+        border-bottom 1px solid $border-color
+        color $font-color-dd
+        .history-text
+          flex 1
+          padding-left 0.5rem
+        .search-icon
+          color $theme-color  
   .result-wrapper
     position fixed
     top 3.5625rem
