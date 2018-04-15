@@ -14,6 +14,7 @@
             <h1 class="text-title" :class="{'isNight': isNight}" ref="textTitle">{{item.title}}</h1>
             <p class="text" v-for="text in item.textContent">{{text}}。</p>
           </div>
+          <p class="loading-chapter">加载下一章</p>
         </div>
       </scroll>
       <div class="more" v-show="loading">
@@ -34,12 +35,14 @@
                   @back="back"
                   ref="settingBtn"
       />
-      <book-chapters :title="currentBook.title"
-                    :author="currentBook.author"
-                    :chapters="chapters"
-                    ref="chapters"
-                    @select="select"
-      />
+      <div class="book-chapters-wrapper">
+        <book-chapters :title="currentBook.title"
+                      :author="currentBook.author"
+                      :chapters="bookChapters"
+                      ref="chapters"
+                      @select="select"
+        />
+      </div>
     </div>
     <confirm ref="confirmBox" @selectConfirm="selectConfirm"
                               @selectCancel="selectCancel"
@@ -72,7 +75,8 @@
         loading: false,
         isNight: false,
         bgColor: '#c6ebc9',
-        currentIndex: 0
+        currentIndex: 0,
+        bookChapters: []
       }
     },
     computed: {
@@ -90,11 +94,16 @@
     },
     created () {
       setTimeout(() => {
+        if (!this.chapters) {
+          this.$router.back()
+          return
+        }
+        this.bookChapters = this.chapters
         this.index = this.currentChapter
         this.currentIndex = this.readStyle.index
         this._getChapterText(this.currentChapter)
         this._filterStorage()
-      }, 600)
+      }, 60)
     },
     mounted () {
       setTimeout(() => {
@@ -165,6 +174,7 @@
             book = Object.assign({}, list[i])
             book.index = this.index - 1
             book.lastChapter = this.title
+            book.id = this.currentId
           }
         }
         this.saveStorageList(book)
@@ -194,7 +204,11 @@
         this.collected = this.collectList.some(item => item.bookInfo.id === this.currentBook.id)
       },
       openChapters () {
+        this.setting = false
         this.$refs.chapters.show()
+        setTimeout(() => {
+          this.$refs.chapters.refresh()
+        }, 200)
       },
       changeMode () {
         this.isNight = !this.isNight
@@ -212,7 +226,7 @@
         this.$refs.chapters.hide()
       },
       _getChapterText (index) {
-        if (!this.chapters || typeof this.chapters[index].id === 'undefined') {
+        if (!this.chapters || typeof this.chapters[index] === 'undefined') {
           return
         }
         const id = this.chapters[index].id
@@ -221,7 +235,9 @@
           this.chapterList.push(item)
           this.title = item.title
         }).catch(() => {
-          console.log('无法请求')
+          setTimeout(() => {
+            this.$router.back()
+          }, 1000)
         })
       },
       scrollToEnd () {
@@ -255,7 +271,6 @@
         }
       },
       currentChapter () {
-        console.log(this.currentChapter)
         this.index = this.currentChapter
         this._getChapterText(this.currentChapter)
       },
@@ -269,7 +284,7 @@
         clearTimeout(timer)
         timer = setTimeout(() => {
           this.loading = false
-        }, 500)
+        }, 600)
       },
       isNight () {
         if (this.isNight) {
@@ -316,7 +331,9 @@
       overflow hidden
       .text-content
         .text-item
-          padding-bottom 10px
+          padding-bottom 0.625rem
+          &:last-of-type
+            padding-bottom 4.5rem
           .text-title
             width 100%
             font-size 24px
@@ -330,6 +347,19 @@
             margin-top 8px
             width 100%
             text-indent 32px
+        .loading-chapter
+          position absolute
+          bottom 40px
+          left 50%
+          width 15rem
+          height 2rem
+          line-height 2rem
+          margin-left -7.5rem
+          text-align center
+          font-size $font-size-medium-x
+          background $theme-color
+          border-radius 1rem
+          color #fff
     .more
       position fixed
       left 50%
@@ -353,12 +383,6 @@
       bottom 0
       width 100%
       height 100vh
-    .chapters-group
-      position fixed
-      top 0
-      left 0
-      right 0
-      bottom 0
 
   .book-text-enter-active, .book-text-leave-active
     transition all 0.4s

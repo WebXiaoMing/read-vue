@@ -18,19 +18,27 @@
         <div class="history-title">
           <span class="line-icon"></span>
           <h1 class="title-text">搜索历史</h1>
-          <p class="change"><i class="icon-trash" @click="changeWords"></i></p>
+          <p class="change" @click="showConfirm"><i class="icon-trash"></i></p>
         </div>
         <ul class="history-list">
-          <li class="history-item" v-for="query in searchHistory">
+          <li class="history-item" v-for="query in searchHistory" @click="setQuery(query)">
             <p class="search-icon"><i class="icon-search"></i></p>
             <p class="history-text">{{query}}</p>
-            <p class="delete-icon"><i class="icon-clear"></i></p>
+            <p class="delete-icon"><i class="icon-clear" @click.stop="deleteOne(query)"></i></p>
           </li>
         </ul>
       </div>
     </div>
     <div class="result-wrapper" v-show="query">
       <result-list :query="query" @selectBook="selectBook"></result-list>
+    </div>
+    <div class="confirm-box-wrapper">
+      <confirm ref="confirm"
+              maxTitle="清空历史"
+              minTitle="是否清空所有搜索历史？"
+              cancel="清空"
+              @selectConfirm="selectConfirm"
+      />
     </div>
   </div>
 </template>
@@ -40,6 +48,7 @@
 
   import SearchBox from 'base/search-box/search-box'
   import ResultList from 'base/result-list/result-list'
+  import Confirm from 'base/confirm/confirm'
 
   export default {
     data () {
@@ -62,6 +71,15 @@
       this._getSearchHot()
     },
     methods: {
+      showConfirm () {
+        this.$refs.confirm.show()
+      },
+      selectConfirm () {
+        this.deleteAll()
+      },
+      deleteOne (query) {
+        this.deleteSearch(query)
+      },
       selectBook (item) {
         this.setCurrentBook(item)
         this.$router.push({
@@ -95,12 +113,15 @@
         setCurrentBook: 'SET_CURRENT_BOOK'
       }),
       ...mapActions([
-        'saveSearchHistory'
+        'saveSearchHistory',
+        'deleteSearch',
+        'deleteAll'
       ])
     },
     components: {
       SearchBox,
-      ResultList
+      ResultList,
+      Confirm
     }
   }
 </script>
@@ -121,7 +142,7 @@
     padding 0 1rem
     .hot-content
       margin-bottom 2rem
-    .hot-content, .search-history-wrapper  
+    .hot-content, .search-history-wrapper
       .hot-title, .history-title
         height 2.5rem
         line-height 2.5rem
@@ -163,7 +184,7 @@
           flex 1
           padding-left 0.5rem
         .search-icon
-          color $theme-color  
+          color $theme-color
   .result-wrapper
     position fixed
     top 3.5625rem

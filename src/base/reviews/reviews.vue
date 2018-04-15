@@ -64,7 +64,7 @@
         flex 1
         .author-name
           height 1.125rem
-          font-size $font-size-small-s
+          font-size $font-size-medium
           color $theme-color
         .updated
           height 1.125rem
@@ -78,6 +78,7 @@
           font-size $font-size-medium
           line-height 1.25rem
           color $font-color-d
+          height 3.6875rem
           no-wrap(3)
         .comment-content
           margin-top 0.375rem

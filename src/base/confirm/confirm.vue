@@ -1,12 +1,12 @@
 <template>
-  <div class="confirm-wrapper" v-show="showFlag">
+  <div class="confirm-wrapper" v-show="showFlag" @click.stop="hide">
     <div class="confirm-box">
       <div class="top-title">
         <h1 class="max-title">{{maxTitle}}</h1>
         <h2 class="min-title">{{minTitle}}</h2>
       </div>
-      <div class="item cancel" @click="selectCancel">取消</div>
-      <div class="item confirm" @click="selectConfirm">确定</div>
+      <div class="item cancel" @click="selectCancel">{{confirm}}</div>
+      <div class="item confirm" @click="selectConfirm">{{cancel}}</div>
     </div>
   </div>
 </template>

@@ -38,8 +38,9 @@
             <h1 class="short-title">简介</h1>
             <p class="short-info">{{bookInfo.longInfo}}</p>
             <div class="catalog-wrapper" @click="showChapters">
-              <span class="catalog-title">目录</span>
-              <span class="catalog-info">连载至 {{bookInfo.chaptersCount}} 章 更新于{{bookInfo.update}}<i class="icon-arrow"></i></span>
+              <span class="catalog-info">最新 {{lastChapter}}</span>
+              <span class="updated">{{bookInfo.update}}</span>
+              <span class="catalog-title"><i class="icon-directory"></i>目录</span>
             </div>
           </div>
           <div class="book-reviews">
@@ -137,6 +138,12 @@
     computed: {
       hasCollect () {
         return this.collected ? 'collected' : ''
+      },
+      lastChapter () {
+        if (!this.chapters || !this.chapters.length) {
+          return
+        }
+        return this.chapters && this.chapters[this.chapters.length - 1].title
       },
       collectText () {
         return this.collected ? '已在书架' : '加入书架'
@@ -258,7 +265,8 @@
         })
       },
       ...mapMutations({
-        setCurrentBook: 'SET_CURRENT_BOOK'
+        setCurrentBook: 'SET_CURRENT_BOOK',
+        setCurrentId: 'SET_CURRENT_ID'
       }),
       ...mapActions([
         'selectRead',
@@ -316,7 +324,6 @@
       Scroll,
       Loading,
       BookChapters,
-      SourceBox,
       ReviewsList,
       Reviews
     }
@@ -390,19 +397,6 @@
       height 2.75rem
       line-height 2.75rem
       color $background-color
-      .source-wrapper
-        position absolute
-        right 1rem
-        top 0
-        font-size $font-size-medium
-        .icon-arrow
-          display inline-block
-          margin-left 0.5rem
-          transform rotate(-90deg)
-          transition all 0.3s
-          &.active
-            transform rotate(0deg)
-            transition all 0.3s
       .top-title-layer
         position absolute
         top 0
@@ -497,16 +491,21 @@
             border-top 1px solid $border-color
             height 2.5rem
             line-height 2.5rem
-            position relative
+            display flex
             .catalog-title
-              font-size $font-size-medium-x
-              color $font-color-dd
-            .catalog-info
-              position absolute
               font-size $font-size-medium
-              right 0
-              .icon-arrow
-                margin-left 0.625rem
+              color $font-color-dd
+              .icon-directory
+                color $font-color
+                margin-right 0.25rem
+            .catalog-info
+              flex 1
+              font-size $font-size-medium
+              color $font-color-dd
+              no-wrap(1)
+            .updated
+              font-size $font-size-small
+              padding 0 1rem
         .book-reviews
           background $font-color-ll
           margin-bottom 0.875rem

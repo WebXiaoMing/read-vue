@@ -1,5 +1,11 @@
 no-wrap($num)
   display -webkit-box
+  display -moz-box
   -webkit-line-clamp $num
+  -moz-line-clamp $num
+  // eslint-disable-next-line
+  /*! autoprefixer: off */
   -webkit-box-orient vertical
+  -moz-box-orient vertical
+  /* autoprefixer: on */
   overflow hidden

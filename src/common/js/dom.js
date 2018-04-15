@@ -52,7 +52,7 @@ export function getUpdateTime (date) {
       ret = day + '天前'
       break
     case !!hover:
-      ret = hover + '个小时前'
+      ret = hover + '小时前'
       break
     case !!minutes:
       ret = minutes + '分钟前'

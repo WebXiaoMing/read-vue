@@ -125,6 +125,7 @@
             text-indent 1.5em
             color $font-color
             line-height 1.25rem
+            height 2.4375
             no-wrap(2)
           .item-book-info
             flex 1

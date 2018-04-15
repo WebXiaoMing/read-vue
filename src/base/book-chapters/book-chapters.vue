@@ -7,13 +7,19 @@
         <h1 class="book-name">{{title}}</h1>
         <p class="book-author">{{author}}</p>
       </div>
+      <p class="reverse" @click="reverseChapters">倒序</p>
     </div>
     <div class="chapters-group">
-      <scroll class="chapters-content" :data="chapters">
+      <scroll class="chapters-content" :data="chapters" ref="chapterList">
         <div class="chapters-list">
-          <p class="item" v-for="(item, index) in chapters" @click.stop.prevent="selectChapter(item, index)">{{item.title}}</p>
+          <p class="item" v-for="(item, index) in chaptersList"
+                          @click.stop.prevent="selectChapter(item, index)"
+                          :class="{'isVip': item.isVip}"
+                          >
+            <span class="item-text">{{item.title}}</span><i v-show="item.isVip" class="icon-lock"></i>
+          </p>
         </div>
-        <div class="loading-wrapper" v-show="!chapters || !chapters.length">
+        <div class="loading-wrapper" v-show="!chaptersList || !chaptersList.length">
           <loading></loading>
         </div>
       </scroll>
@@ -42,7 +48,9 @@
     },
     data () {
       return {
-        showFlag: false
+        showFlag: false,
+        chaptersList: [],
+        isReverse: false
       }
     },
     methods: {
@@ -53,7 +61,23 @@
         this.showFlag = false
       },
       selectChapter (item, index) {
-        this.$emit('select', item, index)
+        if (item.isVip) {
+          return
+        }
+        let currentIndex = this.isReverse ? this.chaptersList.length - 1 - index : index
+        this.$emit('select', item, currentIndex)
+      },
+      refresh () {
+        this.$refs.chapterList && this.$refs.chapterList.refresh()
+      },
+      reverseChapters () {
+        this.chaptersList.reverse()
+        this.isReverse = !this.isReverse
+      }
+    },
+    watch: {
+      chapters () {
+        this.chaptersList = this.chapters.slice()
       }
     },
     components: {
@@ -78,6 +102,8 @@
     .chapters-title
       height 2.75rem
       position relative
+      display flex
+      flex-direction row
       background $background-color-d
       .icon-back
         display inline-block
@@ -86,19 +112,24 @@
         text-align center
         font-size $font-size-large-x
         color $theme-color
+      .reverse
+        padding-right 1rem
+        line-height 2.75rem
+        font-size $font-size-medium
       .book-title-info
-        width 70%
-        position absolute
-        height 100%
-        top 0
-        left 15%
+        height 2.75rem
+        flex 1
         text-align center
+        display flex
+        flex-direction column
         .book-name
-          font-size $font-size-medium-x
           line-height 1.5rem
+          font-size $font-size-medium-x
           color $font-color-dd
         .book-author
+          flex 1
           font-size $font-size-medium
+          line-height 1.25rem
     .chapters-group
       position fixed
       top 2.75rem
@@ -107,9 +138,9 @@
       bottom 0
       background $background-color-m
       .chapters-content
-        overflow hidden
-        height 100%
         width 100%
+        height 100%
+        overflow hidden
         .chapters-list
           .item
             line-height 3.125rem
@@ -117,7 +148,15 @@
             border-top 1px solid #fff
             border-bottom 1px solid $border-color
             font-size $font-size-medium
-            text-indent 1rem
+            padding 0 1rem
+            box-sizing border-box
+            display flex
+            &.isVip
+              color $font-color-l
+            .item-text
+              flex 1
+            .icon-lock
+              line-height 3.125rem
   .fade-enter-active, .fade-leave-active
     transition all 0.3s
   .fade-enter, .fade-leave-to

@@ -2,15 +2,15 @@ import Vue from 'vue'
 import Router from 'vue-router'
 Vue.use(Router)
 
-const BookShelf = () => import('components/book-shelf/book-shelf')
-const Classify = () => import('components/classify/classify')
-const Handpick = () => import('components/handpick/handpick')
-const Search = () => import('components/search/search')
-const Mine = () => import('components/mine/mine')
-const RankList = () => import('components/rank-list/rank-list')
-const BookDetail = () => import('components/book-detail/book-detail')
-const Category = () => import('components/category/category')
-const BookText = () => import('components/book-text/book-text')
+const BookShelf  = () => import('components/book-shelf/book-shelf')
+const Classify  = () => import('components/classify/classify')
+const Handpick  = () => import('components/handpick/handpick')
+const Search  = () => import('components/search/search')
+const Mine  = () => import('components/mine/mine')
+const RankList  = () => import('components/rank-list/rank-list')
+const BookDetail  = () => import('components/book-detail/book-detail')
+const Category  = () => import('components/category/category')
+const BookText  = () => import('components/book-text/book-text')
 
 
 export default new Router({

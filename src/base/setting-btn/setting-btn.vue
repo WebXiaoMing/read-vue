@@ -136,7 +136,7 @@
       position fixed
       top 0
       left 0
-      z-index 990
+      z-index 10
       width 100%
       height 2.75rem
       background rgba(0,0,0, 0.85)

@@ -99,7 +99,7 @@
         getChapters(item.id).then(res => {
           if (res.statusText === 'OK') {
             this.selectRead({
-              id: item.bookInfo.id,
+              id: item.id,
               list: res.data.chapters,
               index: item.index
             })
@@ -120,7 +120,8 @@
     computed: {
       ...mapGetters([
         'collectList',
-        'lastReading'
+        'lastReading',
+        'currentId'
       ])
     },
     watch: {

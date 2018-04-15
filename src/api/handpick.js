@@ -35,5 +35,5 @@ export function getChapters (id) {
 
 // 获取小说章节内容
 export function getChapterText (id) {
-  return axios.get(`/chapterapi/chapter/${id}?cv=1495097622174`)
+  return axios.get(`/chapterapi/chapter/${id}/cv=1495097622174`)
 }

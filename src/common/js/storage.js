@@ -10,10 +10,10 @@ const SEARCH_HISTORY_KEY = '__search__'
 
 function insertArray(arr, obj, compare) {
   const index = arr.findIndex(compare)
-  if (index === 0) {
+  if (index < -1) {
     return
   }
-  if (index > 0) {
+  if (index >= 0) {
     arr.splice(index, 1)
   }
   arr.unshift(obj)
@@ -22,7 +22,6 @@ function insertArray(arr, obj, compare) {
 // 将收藏的书籍添加到本地
 export const saveStorage = function (obj) {
   let storages = storage.get(BOOK_KEY, [])
-
   insertArray(storages, obj, (item) => {
     return item.bookInfo.id === obj.bookInfo.id
   })
@@ -81,6 +80,26 @@ export const setSearchHistory = function (query) {
   return storages
 }
 
+export const deleteOneSearch = function (query) {
+  let storages = storage.get(SEARCH_HISTORY_KEY, [])
+  let index = storages.findIndex(item => {
+    return item === query
+  })
+  if (index > -1) {
+    storages.splice(index, 1)
+  }
+  storage.set(SEARCH_HISTORY_KEY, storages)
+
+  return storages
+}
+
+export const deleteAllSearch = function () {
+  storage.remove(SEARCH_HISTORY_KEY)
+  return []
+}
+
 export const loadSearchHistory = function () {
   return storage.get(SEARCH_HISTORY_KEY, [])
 }
+
+

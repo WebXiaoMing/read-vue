@@ -9,8 +9,8 @@ export default class Chapter {
   }
 }
 
-function trimStr (str) {
-  return typeof str === 'string' && str.split(/\u3002+\s+/).map(str => str.trim())
+function trimStr (text) {
+  return typeof text === 'string' && text.split(/\u3002+\s+/).map(str => str.trim())
 }
 export function getChapter (chapter) {
   return new Chapter({
