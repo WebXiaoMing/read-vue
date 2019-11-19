@@ -1,23 +1,28 @@
 <template>
   <div id="app">
-    <keep-alive>
-      <router-view v-if="$route.meta.keepAlive"></router-view>
-    </keep-alive>
-    <router-view v-if="!$route.meta.keepAlive"></router-view>
-    <tabs></tabs>
+    <img alt="Vue logo" src="./assets/logo.png">
+    <HelloWorld msg="Welcome to Your Vue.js App"/>
   </div>
 </template>
 
-<script type="text/ecmascript">
-import Tabs from 'components/tabs/tabs'
-import BookText from 'components/book-text/book-text'
+<script>
+import HelloWorld from './components/HelloWorld.vue'
+
 export default {
+  name: 'app',
   components: {
-    Tabs,
-    BookText
+    HelloWorld
   }
 }
 </script>
 
-<style scoped lang="stylus">
+<style>
+#app {
+  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+  margin-top: 60px;
+}
 </style>
